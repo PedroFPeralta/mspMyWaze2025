@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoicGVkcm9wZXJhbHRhMDAiLCJhIjoiY205Y3R3bmY3MG1qMjJrc2FpYXZxdHM3YyJ9.iCuna6hnHThiecH5pGFVag';
+const MAPBOX_TOKEN = 'YOUR_TOKEN_HERE'; // Replace with your Mapbox token
 
 const RouteForm = () => {
   const [start, setStart] = useState('');
