@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -6,18 +6,24 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  Keyboard
-} from 'react-native';
-import axios from 'axios';
+  Keyboard,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-const MAPBOX_TOKEN = 'YOUR_TOKEN_HERE'; // Replace with your Mapbox token
+const navigation = useNavigation();
+
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w"; // Replace with your Mapbox token
 
 const RouteForm = () => {
-  const [start, setStart] = useState('');
-  const [end, setEnd] = useState('');
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
   const [startSuggestions, setStartSuggestions] = useState<Array<any>>([]);
   const [endSuggestions, setEndSuggestions] = useState<Array<any>>([]);
   const [isSelectingStart, setIsSelectingStart] = useState(true);
+  const [startCoords, setStartCoords] = useState<[number, number] | null>(null);
+  const [endCoords, setEndCoords] = useState<[number, number] | null>(null);
 
   // Function to search for Mapbox suggestions
   const fetchSuggestions = async (query: string, setSuggestions: Function) => {
@@ -27,19 +33,21 @@ const RouteForm = () => {
     }
     try {
       const response = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`,
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          query
+        )}.json`,
         {
           params: {
             access_token: MAPBOX_TOKEN,
             autocomplete: true,
-            language: 'pt',
+            language: "pt",
             limit: 5,
           },
         }
       );
       setSuggestions(response.data.features);
     } catch (error) {
-      console.error('Error when looking for suggestions:', error);
+      console.error("Error when looking for suggestions:", error);
     }
   };
 
@@ -57,20 +65,31 @@ const RouteForm = () => {
   };
 
   const handleConfirmRoute = () => {
-    if (!start || !end) return alert('Fill in both fields!');
-    console.log('Departure:', start);
-    console.log('Destination:', end);
+    if (!start || !end) return alert("Fill in both fields!");
+    console.log("Departure:", start);
+    console.log("Destination:", end);
 
     // Here you would typically handle the route confirmation logic
     // For example, you might want to navigate to a map screen or fetch route data
+    /*
+    navigation.navigate("MapSreen", {
+      Origin: startCoords,
+      Destination: endCoords,
+    });*/
     Keyboard.dismiss();
   };
 
-  const renderSuggestion = (item: any, setField: Function, clearSuggestions: Function) => (
+  const renderSuggestion = (
+    item: any,
+    setField: Function,
+    clearSuggestions: Function,
+    setCoords: Function
+  ) => (
     <TouchableOpacity
       style={styles.suggestion}
       onPress={() => {
         setField(item.place_name);
+        setCoords(item.geometry.coordinates);
         clearSuggestions([]);
         Keyboard.dismiss();
       }}
@@ -94,7 +113,12 @@ const RouteForm = () => {
           data={startSuggestions}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) =>
-            renderSuggestion(item, setStart, setStartSuggestions)
+            renderSuggestion(
+              item,
+              setStart,
+              setStartSuggestions,
+              setStartCoords
+            )
           }
         />
       )}
@@ -112,17 +136,17 @@ const RouteForm = () => {
           data={endSuggestions}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) =>
-            renderSuggestion(item, setEnd, setEndSuggestions)
+            renderSuggestion(item, setEnd, setEndSuggestions, setEndCoords)
           }
         />
       )}
- 
+
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.buttonAlt} onPress={handleSwap}>
           <Text>🔄 Switch</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleConfirmRoute}>
-          <Text style={{ color: '#fff' }}>📍 Confirm</Text>
+          <Text style={{ color: "#fff" }}>📍 Confirm</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -134,17 +158,17 @@ export default RouteForm;
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     flex: 1,
     marginTop: 40,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: "#aaa",
     borderRadius: 8,
     padding: 10,
     marginTop: 5,
@@ -152,20 +176,20 @@ const styles = StyleSheet.create({
   suggestion: {
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: '#eee',
+    borderColor: "#eee",
   },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 30,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     padding: 12,
     borderRadius: 8,
   },
   buttonAlt: {
-    backgroundColor: '#eee',
+    backgroundColor: "#eee",
     padding: 12,
     borderRadius: 8,
   },
