@@ -17,7 +17,7 @@ const MapScreen = ({ route }: Props) => {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const mapRef = useRef(null);
+  const mapRef = useRef<MapView | null>(null);
 
   useEffect(() => {
     const fetchRoute = async () => {
@@ -48,6 +48,23 @@ const MapScreen = ({ route }: Props) => {
     fetchRoute();
   }, []);
 
+  const handleMapReady = () => {
+    if (mapRef.current && routeCoordinates.length > 0) {
+      // Fit the map to the coordinates (origin + destination + route)
+      mapRef.current.fitToCoordinates(
+        [
+          { latitude: origin[1], longitude: origin[0] },
+          { latitude: destination[1], longitude: destination[0] },
+          ...routeCoordinates,
+        ],
+        {
+          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, // Optional padding
+          animated: true, // Smooth animation
+        }
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -55,6 +72,8 @@ const MapScreen = ({ route }: Props) => {
       ) : (
         <MapView
           style={styles.map}
+          ref={mapRef}
+          onMapReady={handleMapReady}
           initialRegion={{
             latitude: (origin[1] + destination[1]) / 2,
             longitude: (origin[0] + destination[0]) / 2,
