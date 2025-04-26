@@ -22,8 +22,7 @@ const MapScreen = ({ route }: Props) => {
   useEffect(() => {
     const fetchRoute = async () => {
       try {
-        const accessToken =
-          "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w";
+        const accessToken = "YOUR_TOKEN_HERE";
         const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?geometries=polyline&access_token=${accessToken}`;
 
         const response = await fetch(url);
