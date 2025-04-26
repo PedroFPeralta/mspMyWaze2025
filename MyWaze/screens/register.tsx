@@ -3,7 +3,7 @@ import {Text, View, TextInput, Image, TouchableOpacity, StyleSheet, Button } fro
 import { FIREBASE_AUTH } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
 
-export default function LoginScreen(){
+export default function RegisterScreen(){
     // Firebase Authentication
     const auth = FIREBASE_AUTH;
 
@@ -16,18 +16,7 @@ export default function LoginScreen(){
     setPasswordVisible(!passwordVisible);
     };
 
-    const handleLogin = async () => {
-        // Handle login logic here
-        try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
-            console.log("Login successful:", response);
-        } catch (error) {
-            console.error("Login error:", error);
-        }
-    
-    }
-
-    const handleSignUp = async () => {
+    const handleRegister = async () => {
         // Handle sign-up logic here
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
@@ -40,28 +29,20 @@ export default function LoginScreen(){
 
     return(
         <View style={styles.container}>
-            <View>
-                <Text>Login Screen</Text>
-                {/*<Image source={require("./../assets/login_logo.png")} style={styles.logoIcon}/>*/}
+            <View style={styles.imageContainer}>
+
             </View>
+            <Text style={{fontSize: 24, fontWeight: "bold"}}>Register</Text>
+
 
             <View style={styles.loginContainer}>
                 <View style = {styles.inputContainer}>
-                    <View style={{width: "100%"}}>
-                        <Text>Email</Text>
-                    </View>
                     <TextInput
                         style = {styles.textInput}
                         placeholder="Email"
                         value = {email}
                         onChangeText={(value) => setEmail(value)}
                     />
-                </View>
-
-                <View style = {styles.inputContainer}>
-                    <View style={{width: "100%"}}>
-                        <Text>Password</Text>
-                    </View>
                     <TextInput
                         style = {styles.textInput}
                         placeholder="Password"
@@ -71,14 +52,11 @@ export default function LoginScreen(){
                     />
                 </View>
 
-                <TouchableOpacity onPress={togglePasswordVisibility}>
-                        <Text>{passwordVisible ? "Show" : "Hide"}</Text>
-                </TouchableOpacity>
-
                 <View style = {styles.buttonContainer}>
-                    <Button title="Back" onPress={() => console.log("breh")}/>
-                    <Button title="Login" onPress={handleLogin} />
-
+                    <View style = {styles.button}>
+                        <Button title="Sign-Up" onPress={handleRegister} />
+                    </View>
+                    <Text>Already Have an Account?</Text>
                 </View>
             </View>
         </View>
@@ -88,41 +66,60 @@ export default function LoginScreen(){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'whitesmoke',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  imageContainer:{
+    width: 90,
+    height: 90,
+    backgroundColor: "blue",
+  },
   loginContainer: {
-    backgroundColor: "beige",
+    backgroundColor: "whitemoke",
     width: 300,
-    height: 300,
+    height: 330,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-evenly",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 20,
+    borderWidth: 1,
+    borderColor: "black",
   },
   inputContainer:{
+    borderWidth: 1,
+    borderColor: "purple",
+    height: 100,
     width: "100%",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
     alignItems: "center",
-    borderColor: "red",
-    borderWidth: 1,
   },
   textInput:{
     borderWidth: 1,
-    borderColor: "black",
+    borderColor: "blue",
     textAlign: "center",
-    width: "80%"
+    color: "white",
+    fontWeight: "bold",
+    backgroundColor: "blue",
+    borderRadius: 50,
+    width: "80%",
+    height: 40,
   },
   buttonContainer:{
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
+    flexDirection: "column",
     borderColor: "purple",
+    alignItems: "center",
     borderWidth: 1,
-    width: "60%"
-  }
+    width: "80%",
+  },
+  button:{
+    width: "50%",
+    marginBottom: 5,
+  },
 
 });
 
