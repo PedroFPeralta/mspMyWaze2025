@@ -8,10 +8,16 @@ import {
   StyleSheet,
   Keyboard,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
-const navigation = useNavigation();
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../App";
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Home"
+>;
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w"; // Replace with your Mapbox token
@@ -22,8 +28,10 @@ const RouteForm = () => {
   const [startSuggestions, setStartSuggestions] = useState<Array<any>>([]);
   const [endSuggestions, setEndSuggestions] = useState<Array<any>>([]);
   const [isSelectingStart, setIsSelectingStart] = useState(true);
-  const [startCoords, setStartCoords] = useState<[number, number] | null>(null);
-  const [endCoords, setEndCoords] = useState<[number, number] | null>(null);
+  const [startCoords, setStartCoords] = useState([]);
+  const [endCoords, setEndCoords] = useState([]);
+
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   // Function to search for Mapbox suggestions
   const fetchSuggestions = async (query: string, setSuggestions: Function) => {
@@ -71,11 +79,10 @@ const RouteForm = () => {
 
     // Here you would typically handle the route confirmation logic
     // For example, you might want to navigate to a map screen or fetch route data
-    /*
-    navigation.navigate("MapSreen", {
-      Origin: startCoords,
-      Destination: endCoords,
-    });*/
+    navigation.navigate("Map", {
+      origin: [startCoords[0], startCoords[1]],
+      destination: [endCoords[0], endCoords[1]],
+    });
     Keyboard.dismiss();
   };
 

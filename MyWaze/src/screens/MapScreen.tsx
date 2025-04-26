@@ -1,88 +1,95 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import axios from "axios";
-
+import polyline from "@mapbox/polyline";
 import { RouteProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../App";
 
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w";
-
-// I'm repeating the types here
-type Coords = {
-  lng: number;
-  lat: number;
-};
-
-type RootStackParamList = {
-  RouteForm: undefined;
-  MapScreen: { Origin: Coords; Destination: Coords };
-};
-
-type MapScreenRouteProp = RouteProp<RootStackParamList, "MapScreen">;
-
-interface MapScreenProps {
+interface Props {
   route: MapScreenRouteProp;
 }
 
-const MapScreen = ({ route }: MapScreenProps) => {
-  const { Origin, Destination } = route.params;
-  const [routeCoords, setRouteCoords] = useState<
-    { latitude: number; longitude: number }[]
-  >([]);
+type MapScreenRouteProp = RouteProp<RootStackParamList, "Map">;
+
+const MapScreen = ({ route }: Props) => {
+  const { origin, destination } = route.params;
+
+  const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const mapRef = useRef(null);
 
   useEffect(() => {
     const fetchRoute = async () => {
       try {
-        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${Origin.lng},${Origin.lat};${Destination.lng},${Destination.lat}?geometries=geojson&access_token=${MAPBOX_TOKEN}`;
-        const res = await axios.get(url);
-        const coords: [number, number][] =
-          res.data.routes[0].geometry.coordinates;
-        setRouteCoords(
-          coords.map(([lng, lat]) => ({ latitude: lat, longitude: lng }))
-        );
-      } catch (err) {
-        console.error("Failed to fetch route", err);
+        const accessToken =
+          "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w";
+        const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?geometries=polyline&access_token=${accessToken}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.routes && data.routes.length > 0) {
+          const points = polyline.decode(data.routes[0].geometry);
+          const coordinates = points.map(([lat, lng]) => ({
+            latitude: lat,
+            longitude: lng,
+          }));
+
+          setRouteCoordinates(coordinates);
+        }
+      } catch (error) {
+        console.error("Error fetching route: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRoute();
   }, []);
 
-  if (routeCoords.length === 0) {
-    return <ActivityIndicator style={{ flex: 1 }} size="large" />;
-  }
-
   return (
-    <MapView
-      style={styles.map}
-      initialRegion={{
-        latitude: Origin.lat,
-        longitude: Origin.lng,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      }}
-    >
-      <Marker
-        coordinate={{ latitude: Origin.lat, longitude: Origin.lng }}
-        title="Start"
-      />
-      <Marker
-        coordinate={{ latitude: Destination.lat, longitude: Destination.lng }}
-        title="End"
-      />
-      <Polyline
-        coordinates={routeCoords}
-        strokeColor="#0000FF"
-        strokeWidth={4}
-      />
-    </MapView>
+    <View style={styles.container}>
+      {loading ? (
+        <ActivityIndicator size="large" color="blue" />
+      ) : (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: (origin[1] + destination[1]) / 2,
+            longitude: (origin[0] + destination[0]) / 2,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }}
+        >
+          <Marker
+            coordinate={{ latitude: origin[1], longitude: origin[0] }}
+            title="Origin"
+          />
+          <Marker
+            coordinate={{ latitude: destination[1], longitude: destination[0] }}
+            title="Destination"
+          />
+
+          {routeCoordinates.length > 0 && (
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeWidth={4}
+              strokeColor="blue"
+            />
+          )}
+        </MapView>
+      )}
+    </View>
   );
 };
 
 export default MapScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   map: {
     flex: 1,
   },
