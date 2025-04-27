@@ -72,7 +72,7 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
                 </View>
 
                 <TouchableOpacity onPress={togglePasswordVisibility}>
-                        <Text>{passwordVisible ? "Show" : "Hide"}</Text>
+                        <Text>{passwordVisible ? "Hide" : "Show"}</Text>
                 </TouchableOpacity>
 
                     {isLoading ? (
