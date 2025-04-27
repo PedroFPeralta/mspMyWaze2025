@@ -11,8 +11,8 @@ import LoginScreen from "./screens/login";
 export type RootStackParamList = {
   Home: undefined;
   Map: {
-    origin: [number, number]; // [longitude, latitude]
-    destination: [number, number]; // [longitude, latitude]
+    origin?: [number, number]; // [longitude, latitude]
+    destination?: [number, number]; // [longitude, latitude]
   };
   Register: undefined;
   Login: undefined;
@@ -24,7 +24,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen
+        <Stack.Screen
           name="Register"
           component={RegisterScreen}
           options={{ title: "Register" }}

@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, View, ActivityIndicator, Button } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import polyline from "@mapbox/polyline";
-import { RouteProp } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
 
 interface Props {
@@ -11,15 +12,26 @@ interface Props {
 
 type MapScreenRouteProp = RouteProp<RootStackParamList, "Map">;
 
+type MapScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Map"
+>;
+
 const MapScreen = ({ route }: Props) => {
-  const { origin, destination } = route.params;
+  const { origin, destination } = route.params || {};
 
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const mapRef = useRef<MapView | null>(null);
 
+  const navigation = useNavigation<MapScreenNavigationProp>();
+
   useEffect(() => {
+    if (!origin || !destination) {
+      setLoading(false);
+      return;
+    }
     const fetchRoute = async () => {
       try {
         const accessToken = "YOUR_TOKEN_HERE";
@@ -36,6 +48,8 @@ const MapScreen = ({ route }: Props) => {
           }));
 
           setRouteCoordinates(coordinates);
+        } else {
+          console.error("No routes found in API response", data);
         }
       } catch (error) {
         console.error("Error fetching route: ", error);
@@ -45,9 +59,10 @@ const MapScreen = ({ route }: Props) => {
     };
 
     fetchRoute();
-  }, []);
+  }, [origin, destination]);
 
   const handleMapReady = () => {
+    if (!origin || !destination) return;
     if (mapRef.current && routeCoordinates.length > 0) {
       // Fit the map to the coordinates (origin + destination + route)
       mapRef.current.fitToCoordinates(
@@ -74,29 +89,43 @@ const MapScreen = ({ route }: Props) => {
           ref={mapRef}
           onMapReady={handleMapReady}
           initialRegion={{
-            latitude: (origin[1] + destination[1]) / 2,
-            longitude: (origin[0] + destination[0]) / 2,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05,
+            latitude: 38.659969, // FCT coordinates
+            longitude: -9.202948,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
           }}
         >
-          <Marker
-            coordinate={{ latitude: origin[1], longitude: origin[0] }}
-            title="Origin"
-          />
-          <Marker
-            coordinate={{ latitude: destination[1], longitude: destination[0] }}
-            title="Destination"
-          />
-
-          {routeCoordinates.length > 0 && (
-            <Polyline
-              coordinates={routeCoordinates}
-              strokeWidth={4}
-              strokeColor="blue"
-            />
+          {origin && destination && (
+            <>
+              <Marker
+                coordinate={{ latitude: origin[1], longitude: origin[0] }}
+                title="Origin"
+              />
+              <Marker
+                coordinate={{
+                  latitude: destination[1],
+                  longitude: destination[0],
+                }}
+                title="Destination"
+              />
+              {routeCoordinates.length > 0 && (
+                <Polyline
+                  coordinates={routeCoordinates}
+                  strokeWidth={4}
+                  strokeColor="blue"
+                />
+              )}
+            </>
           )}
         </MapView>
+      )}
+      {!origin && !destination && (
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Plan Route"
+            onPress={() => navigation.navigate("Home")}
+          />
+        </View>
       )}
     </View>
   );
@@ -110,5 +139,10 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 40,
+    alignSelf: "center",
   },
 });
