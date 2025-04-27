@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import {Text, View, TextInput, Image, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { FIREBASE_AUTH } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../App";
 
-export default function RegisterScreen(){
+type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "Register">;
+
+export default function RegisterScreen({navigation}: RegisterScreenProps) {
     // Firebase Authentication
     const auth = FIREBASE_AUTH;
 
@@ -11,6 +15,7 @@ export default function RegisterScreen(){
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Loading state, useful for showing a loading indicator or hiding buttons so the user doesn't click multiple times. For now it just replaces the signup button with "Loading...".
 
     const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -19,11 +24,17 @@ export default function RegisterScreen(){
     const handleRegister = async () => {
         // Handle sign-up logic here
         try {
+            setIsLoading(true); // Set loading state to true
             const response = await createUserWithEmailAndPassword(auth, email, password);
             console.log("Sign-up successful:", response.user);
+            navigation.navigate("Login"); // Navigate to the Login screen after successful sign-up
         } catch (error) {
             console.error("Sign-up error:", error);
         }
+        finally {
+            setIsLoading(false); // Set loading state back to false
+        }
+
     }
 
 
@@ -54,9 +65,15 @@ export default function RegisterScreen(){
 
                 <View style = {styles.buttonContainer}>
                     <View style = {styles.button}>
+                      {isLoading ? (
+                        <Text>Loading...</Text>
+                      ) : (
                         <Button title="Sign-Up" onPress={handleRegister} />
+                      )}
                     </View>
-                    <Text>Already Have an Account?</Text>
+                    <TouchableOpacity  onPress={() => navigation.navigate("Login")}>
+                      <Text style= {{textDecorationStyle: "solid", textDecorationLine: "underline", textDecorationColor: "blue"}}>Already Have an Account?</Text> 
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>

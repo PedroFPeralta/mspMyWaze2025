@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import {Text, View, TextInput, Image, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { FIREBASE_AUTH } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
+import { RouteProp } from "@react-navigation/native";
+import { RootStackParamList } from "../App";
+import { NativeStackNavigatorProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 
-export default function LoginScreen(){
+type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "Login">;
+
+export default function LoginScreen({navigation}: LoginScreenProps) {
     // Firebase Authentication
     const auth = FIREBASE_AUTH;
 
@@ -11,6 +16,7 @@ export default function LoginScreen(){
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Loading state, useful for showing a loading indicator or hiding buttons so the user doesn't click multiple times. For now it just replaces the login button with "Loading...".
 
     const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -19,24 +25,18 @@ export default function LoginScreen(){
     const handleLogin = async () => {
         // Handle login logic here
         try {
+            setIsLoading(true); // Set loading state to true
             const response = await signInWithEmailAndPassword(auth, email, password);
             console.log("Login successful:", response);
+            navigation.navigate("Register"); // Navigate to the Register screen after successful login TESTING
+            
         } catch (error) {
             console.error("Login error:", error);
+        } finally {
+            setIsLoading(false); // Set loading state back to false
         }
     
     }
-
-    const handleSignUp = async () => {
-        // Handle sign-up logic here
-        try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log("Sign-up successful:", response.user);
-        } catch (error) {
-            console.error("Sign-up error:", error);
-        }
-    }
-
 
     return(
         <View style={styles.container}>
@@ -75,11 +75,17 @@ export default function LoginScreen(){
                         <Text>{passwordVisible ? "Show" : "Hide"}</Text>
                 </TouchableOpacity>
 
-                <View style = {styles.buttonContainer}>
-                    <Button title="Back" onPress={() => console.log("breh")}/>
-                    <Button title="Login" onPress={handleLogin} />
-
-                </View>
+                    {isLoading ? (
+                        <View style = {styles.buttonContainer}>
+                            <Text>Loading...</Text>
+                        </View>
+                        ) : (
+                        <View style={styles.buttonContainer}>
+                            <Button title="Back" onPress={() => navigation.goBack()}/>
+                            <Button title="Login" onPress={handleLogin} />
+                        </View>
+                        )
+                    }
             </View>
         </View>
     );
