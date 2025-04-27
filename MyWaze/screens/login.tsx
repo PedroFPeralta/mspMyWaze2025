@@ -75,17 +75,17 @@ export default function LoginScreen({navigation}: LoginScreenProps) {
                         <Text>{passwordVisible ? "Hide" : "Show"}</Text>
                 </TouchableOpacity>
 
-                    {isLoading ? (
-                        <View style = {styles.buttonContainer}>
-                            <Text>Loading...</Text>
-                        </View>
-                        ) : (
-                        <View style={styles.buttonContainer}>
-                            <Button title="Back" onPress={() => navigation.goBack()}/>
-                            <Button title="Login" onPress={handleLogin} />
-                        </View>
-                        )
-                    }
+                {isLoading ? (
+                <View style = {styles.buttonContainer}>
+                    <Text>Loading...</Text>
+                </View>
+                ) : (
+                <View style={styles.buttonContainer}>
+                    <Button title="Back" onPress={() => navigation.goBack()}/>
+                    <Button title="Login" onPress={handleLogin} />
+                </View>
+                )
+                }
             </View>
         </View>
     );
