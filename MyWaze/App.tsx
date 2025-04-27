@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
@@ -22,7 +22,6 @@ export default function App() {
       <RegisterScreen />
     </View>
   );
-=======
 import React from "react";
 import {SafeAreaView, StyleSheet, Text, View} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
@@ -81,7 +80,7 @@ export default function App() {
             </NavigationContainer>
         </SettingsProvider>
     );
->>>>>>> Stashed changes
+
 }
 
 const styles = StyleSheet.create({
