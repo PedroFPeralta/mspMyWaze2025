@@ -19,7 +19,8 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
   "Home"
 >;
 
-const MAPBOX_TOKEN = "YOUR_TOKEN_HERE"; // Replace with your Mapbox token
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w"; // Replace with your Mapbox token
 
 const RouteForm = () => {
   const [start, setStart] = useState("");
