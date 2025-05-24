@@ -4,7 +4,7 @@ import { FIREBASE_AUTH } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
-
+import { FontAwesome } from "@expo/vector-icons";
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "Register">;
 
 export default function RegisterScreen({navigation}: RegisterScreenProps) {
@@ -14,6 +14,7 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
     // Everything inside the function
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState(""); // Added phone number state 
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // Loading state, useful for showing a loading indicator or hiding buttons so the user doesn't click multiple times. For now it just replaces the signup button with "Loading...".
 
@@ -40,10 +41,8 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
 
     return(
         <View style={styles.container}>
-            <View style={styles.imageContainer}>
-
-            </View>
-            <Text style={{fontSize: 24, fontWeight: "bold"}}>Register</Text>
+          <FontAwesome name="user-plus" size={80} color="white"/>           
+          <Text style={{fontSize: 24, fontWeight: "bold", color:"whitesmoke", textShadowColor: 'black', textShadowOffset: { width: 1.5, height: 1.5 }, textShadowRadius: 1,}}>Register</Text>
 
 
             <View style={styles.loginContainer}>
@@ -56,6 +55,12 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
                     />
                     <TextInput
                         style = {styles.textInput}
+                        placeholder="Phone Number"
+                        value = {phoneNumber}
+                        onChangeText={(value) => setPhoneNumber(value)}
+                    />
+                    <TextInput
+                        style = {styles.textInput}
                         placeholder="Password"
                         value = {password}
                         onChangeText={(value) => setPassword(value)}
@@ -64,15 +69,15 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
                 </View>
 
                 <View style = {styles.buttonContainer}>
-                    <View style = {styles.button}>
                       {isLoading ? (
                         <Text>Loading...</Text>
                       ) : (
-                        <Button title="Sign-Up" onPress={handleRegister} />
+                        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                          <Text style={styles.buttonText}>Sign-Up</Text>
+                        </TouchableOpacity>
                       )}
-                    </View>
                     <TouchableOpacity  onPress={() => navigation.navigate("Login")}>
-                      <Text style= {{textDecorationStyle: "solid", textDecorationLine: "underline", textDecorationColor: "blue", color: "blue"}}>Already Have an Account?</Text> 
+                      <Text style= {{textDecorationStyle: "solid", textDecorationLine: "underline", textDecorationColor: "blue", color: "#5A189A"}}>Already Have an Account?</Text> 
                     </TouchableOpacity>
                 </View>
             </View>
@@ -83,14 +88,13 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'whitesmoke',
+    backgroundColor: '#A3D5FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   imageContainer:{
     width: 90,
     height: 90,
-    backgroundColor: "blue",
   },
   loginContainer: {
     backgroundColor: "whitemoke",
@@ -107,7 +111,7 @@ const styles = StyleSheet.create({
   inputContainer:{
     borderWidth: 1,
     borderColor: "purple",
-    height: 100,
+    height: 160,
     width: "100%",
     display: "flex",
     flexDirection: "column",
@@ -115,12 +119,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textInput:{
-    borderWidth: 1,
-    borderColor: "blue",
+    borderWidth: 2,
+    borderColor: "black",
     textAlign: "center",
-    color: "white",
     fontWeight: "bold",
-    backgroundColor: "blue",
+    backgroundColor: "whitesmoke",
     borderRadius: 50,
     width: "80%",
     height: 40,
@@ -134,9 +137,18 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   button:{
-    width: "50%",
-    marginBottom: 5,
+      backgroundColor: '#5A189A', // deep purple
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 25,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 5,
   },
-
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  }
 });
 

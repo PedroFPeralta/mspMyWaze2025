@@ -19,6 +19,7 @@ import {
   NativeStackNavigatorProps,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
+import { FontAwesome } from "@expo/vector-icons";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -52,49 +53,37 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text>Login Screen</Text>
-        {/*<Image source={require("./../assets/login_logo.png")} style={styles.logoIcon}/>*/}
-      </View>
-
+      <FontAwesome name="user" size={80} color="white" />
+      <Text style={{fontSize: 24, fontWeight: "bold", color:"whitesmoke", textShadowColor: 'black', textShadowOffset: { width: 1.5, height: 1.5 }, textShadowRadius: 1,}}>Login</Text>
       <View style={styles.loginContainer}>
         <View style={styles.inputContainer}>
-          <View style={{ width: "100%" }}>
-            <Text>Email</Text>
-          </View>
           <TextInput
             style={styles.textInput}
             placeholder="Email"
             value={email}
             onChangeText={(value) => setEmail(value)}
           />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <View style={{ width: "100%" }}>
-            <Text>Password</Text>
-          </View>
           <TextInput
-            style={styles.textInput}
-            placeholder="Password"
-            value={password}
-            onChangeText={(value) => setPassword(value)}
-            secureTextEntry={!passwordVisible}
+                                  style = {styles.textInput}
+                                  placeholder="Password"
+                                  value = {password}
+                                  onChangeText={(value) => setPassword(value)} secureTextEntry={!passwordVisible}
           />
         </View>
-
         <TouchableOpacity onPress={togglePasswordVisibility}>
           <Text>{passwordVisible ? "Show" : "Hide"}</Text>
         </TouchableOpacity>
 
         {isLoading ? (
-          <View style={styles.buttonContainer}>
             <Text>Loading...</Text>
-          </View>
         ) : (
           <View style={styles.buttonContainer}>
-            <Button title="Back" onPress={() => navigation.goBack()} />
-            <Button title="Login" onPress={handleLogin} />
+                                <TouchableOpacity style={[styles.button, styles.buttonBack]} onPress={() => navigation.goBack()}>
+                                                          <Text style={styles.buttonText}>Back</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
+                                                          <Text style={styles.buttonText}>Login</Text>
+                                </TouchableOpacity>
           </View>
         )}
       </View>
@@ -102,42 +91,74 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#A3D5FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageContainer:{
+    width: 90,
+    height: 90,
   },
   loginContainer: {
-    backgroundColor: "beige",
+    backgroundColor: "whitemoke",
     width: 300,
-    height: 300,
+    height: 330,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-evenly",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 20,
+    borderWidth: 1,
+    borderColor: "black",
   },
-  inputContainer: {
+  inputContainer:{
+    borderWidth: 1,
+    borderColor: "purple",
+    height: 160,
     width: "100%",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
     alignItems: "center",
-    borderColor: "red",
-    borderWidth: 1,
   },
-  textInput: {
-    borderWidth: 1,
+  textInput:{
+    borderWidth: 2,
     borderColor: "black",
     textAlign: "center",
+    fontWeight: "bold",
+    backgroundColor: "whitesmoke",
+    borderRadius: 50,
     width: "80%",
+    height: 40,
   },
-  buttonContainer: {
+  buttonContainer:{
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-evenly",
     borderColor: "purple",
+    alignItems: "center",
+    justifyContent: "space-evenly",
     borderWidth: 1,
-    width: "60%",
+    width: "80%",
   },
+  button:{
+      backgroundColor: '#5A189A', // deep purple
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 25,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 5,
+  },
+  buttonBack: {
+    backgroundColor: 'grey',
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  }
 });
