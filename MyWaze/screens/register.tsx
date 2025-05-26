@@ -43,8 +43,6 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
         <View style={styles.container}>
           <FontAwesome name="user-plus" size={80} color="white"/>           
           <Text style={{fontSize: 24, fontWeight: "bold", color:"whitesmoke", textShadowColor: 'black', textShadowOffset: { width: 1.5, height: 1.5 }, textShadowRadius: 1,}}>Register</Text>
-
-
             <View style={styles.loginContainer}>
                 <View style = {styles.inputContainer}>
                     <TextInput
@@ -67,7 +65,6 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
                         secureTextEntry={!passwordVisible}
                     />
                 </View>
-
                 <View style = {styles.buttonContainer}>
                       {isLoading ? (
                         <Text>Loading...</Text>

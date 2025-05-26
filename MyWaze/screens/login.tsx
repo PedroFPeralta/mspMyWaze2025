@@ -67,13 +67,22 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                                   style = {styles.textInput}
                                   placeholder="Password"
                                   value = {password}
-                                  onChangeText={(value) => setPassword(value)} secureTextEntry={!passwordVisible}
+                                  onChangeText={(value) => setPassword(value)} secureTextEntry={passwordVisible}
           />
         </View>
         <TouchableOpacity onPress={togglePasswordVisibility}>
-          <Text>{passwordVisible ? "Show" : "Hide"}</Text>
+          {passwordVisible ? 
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <FontAwesome name="eye" size={24} color="black" />
+                <Text> Show </Text>
+              </View>
+          : 
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <FontAwesome name="eye-slash" size={24} color="black" />
+                <Text> Hide </Text>
+              </View>
+          }
         </TouchableOpacity>
-
         {isLoading ? (
             <Text>Loading...</Text>
         ) : (
