@@ -4,7 +4,7 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import polyline from "@mapbox/polyline";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList } from "../App";
 
 interface Props {
   route: MapScreenRouteProp;
@@ -124,7 +124,7 @@ const MapScreen = ({ route }: Props) => {
         <View style={styles.buttonContainer}>
           <Button
             title="Plan Route"
-            onPress={() => navigation.navigate("Home")}
+            onPress={() => navigation.navigate("Settings")}
           />
         </View>
       )}

@@ -1,11 +1,12 @@
 import React from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, Settings, StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RouteForm from "./src/screens/RouteForm";
-import MapScreen from "./src/screens/MapScreen";
-import RegisterScreen from "./screens/register";
-import LoginScreen from "./screens/login";
+import RouteForm from "./screens/RouteForm";
+import MapScreen from "./screens/MapScreen";
+import RegisterScreen from "./screens/Register";
+import LoginScreen from "./screens/Login";
+import SettingsScreen from "./screens/Settings";
 
 // Stack Navigator Screens and their parameters
 export type RootStackParamList = {
@@ -16,6 +17,7 @@ export type RootStackParamList = {
   };
   Register: undefined;
   Login: undefined;
+  Settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,6 +46,12 @@ export default function App() {
           component={MapScreen}
           options={{ title: "Map" }}
         ></Stack.Screen>
+        <Stack.Screen
+          name = "Settings"
+          component = {SettingsScreen}
+          options = {{title: "Settings"}}
+        >
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
