@@ -21,12 +21,24 @@ import {
 } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
 import SettingsCategory from "../components/SettingsCategory";
+import { fetchUserPreferences } from "../SettingsService";
 
 type SettingsScreenProps = NativeStackScreenProps<RootStackParamList, "Settings">;
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   // Firebase Authentication
   const auth = FIREBASE_AUTH;
+    const user_id = auth.currentUser?.uid;
+    
+    function test(){
+      const result = fetchUserPreferences("sdwasdwasdwasd");
+      result.then((data) => {
+        const d1 = data[0];
+        console.log("User Preferences:", d1.avoid_motorways);
+      }).catch((error) => {
+        console.error("Error fetching user preferences:", error);
+      });
+    }
 
   return (
     <View style={styles.container}>
@@ -36,7 +48,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
           <SettingsCategory
             vectorIcon="gear"
             title="General"
-            onPress={() => alert("Waddup")}
+            onPress={() => test()}
           />
         </View>
       </View>

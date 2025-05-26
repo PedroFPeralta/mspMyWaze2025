@@ -21,8 +21,11 @@ import {
 } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
 import SettingsCategory from "../components/SettingsCategory";
+import { getFirestore } from "firebase/firestore";
+import { fetchUserPreferences } from "../SettingsService";
 
 type NavigationPreferencesScreenProps = NativeStackScreenProps<RootStackParamList, "Settings">;
+
 
 export default function NavigationPreferencesScreen({ navigation }: NavigationPreferencesScreenProps) {
   // Firebase Authentication
@@ -36,7 +39,7 @@ export default function NavigationPreferencesScreen({ navigation }: NavigationPr
           <SettingsCategory
             vectorIcon="star"
             title="Avoid Toll Roads"
-            onPress={() => alert("Waddup")}
+            onPress={() => alert("Feature not implemented yet")}
           />
         </View>
       </View>

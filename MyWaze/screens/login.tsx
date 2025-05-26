@@ -21,6 +21,7 @@ import {
 } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
 
+
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
