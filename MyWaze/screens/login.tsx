@@ -57,7 +57,8 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     // Custom skip logic here
     const response = await signInWithEmailAndPassword(auth, "teste@email.com", "123456");
     //const response2 = await createUserPreferences(response.user.uid);
-    navigation.navigate("Map", {}); // Navigate to the Map screen when skip is pressed
+    //navigation.navigate("Map", {}); // Navigate to the Map screen when skip is pressed
+    navigation.navigate("MainScreen"); // Navigate to the MainScreen after skipping
   };
 
   return (

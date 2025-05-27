@@ -8,6 +8,7 @@ import RegisterScreen from "./screens/Register";
 import LoginScreen from "./screens/Login";
 import SettingsScreen from "./screens/Settings";
 import NavigationPreferencesScreen from "./screens/NavigationPreferences";
+import MainScreen from "./screens/MainScreen";
 
 // Stack Navigator Screens and their parameters
 export type RootStackParamList = {
@@ -20,6 +21,7 @@ export type RootStackParamList = {
   Login: undefined;
   Settings: undefined;
   NavigationPreferences: undefined;
+  MainScreen: undefined
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,34 +34,37 @@ export default function App() {
           name="Register"
           component={RegisterScreen}
           options={{ headerShown: false }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="Home"
           component={RouteForm}
           options={{ title: "Welcome" }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="Login"
           component={LoginScreen}
           options={{ headerShown: false }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="Map"
           component={MapScreen}
           options={{ title: "Map" }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name = "Settings"
           component = {SettingsScreen}
           options = {{title: "Settings"}}
-        >
-        </Stack.Screen>
+        />
         <Stack.Screen
           name = "NavigationPreferences"
           component = {NavigationPreferencesScreen}
           options = {{title: "Navigation Preferences"}}
-        >
-        </Stack.Screen>
+        />
+        <Stack.Screen
+          name = "MainScreen"
+          component = {MainScreen}
+          options = {{headerShown: false}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
