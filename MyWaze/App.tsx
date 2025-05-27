@@ -9,6 +9,7 @@ import LoginScreen from "./screens/Login";
 import SettingsScreen from "./screens/Settings";
 import NavigationPreferencesScreen from "./screens/NavigationPreferences";
 import MainScreen from "./screens/MainScreen";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Stack Navigator Screens and their parameters
 export type RootStackParamList = {
@@ -28,6 +29,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
+    <SafeAreaProvider>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
@@ -67,5 +69,6 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
