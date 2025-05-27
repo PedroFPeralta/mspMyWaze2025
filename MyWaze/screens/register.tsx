@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@fir
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
 import { FontAwesome } from "@expo/vector-icons";
+import { createUserPreferences } from "../SettingsService";
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "Register">;
 
 export default function RegisterScreen({navigation}: RegisterScreenProps) {
@@ -27,8 +28,10 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
         try {
             setIsLoading(true); // Set loading state to true
             const response = await createUserWithEmailAndPassword(auth, email, password);
+            const response2 = await createUserPreferences(response.user.uid);
+            const response3 = await signInWithEmailAndPassword(auth, email, password);
             console.log("Sign-up successful:", response.user);
-            navigation.navigate("Login"); // Navigate to the Login screen after successful sign-up
+            navigation.navigate("Map", {}); // Navigate to the Login screen after successful sign-up
         } catch (error) {
             console.error("Sign-up error:", error);
         }

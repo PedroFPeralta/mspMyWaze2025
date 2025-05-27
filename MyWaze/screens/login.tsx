@@ -20,6 +20,7 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
+import { createUserPreferences } from "../SettingsService";
 
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "Login">;
@@ -50,6 +51,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     } finally {
       setIsLoading(false); // Set loading state back to false
     }
+  };
+
+  const customSkip = async () => {
+    // Custom skip logic here
+    const response = await signInWithEmailAndPassword(auth, "teste@email.com", "123456");
+    //const response2 = await createUserPreferences(response.user.uid);
+    navigation.navigate("Map", {}); // Navigate to the Map screen when skip is pressed
   };
 
   return (
@@ -97,6 +105,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           </View>
         )}
       </View>
+      <TouchableOpacity>
+        <Button
+          title="skip"
+          onPress={() => customSkip()}
+          color="#5A189A" // deep purple
+          />
+      </TouchableOpacity>
     </View>
   );
 }

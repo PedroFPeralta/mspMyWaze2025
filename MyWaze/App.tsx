@@ -7,6 +7,7 @@ import MapScreen from "./screens/MapScreen";
 import RegisterScreen from "./screens/Register";
 import LoginScreen from "./screens/Login";
 import SettingsScreen from "./screens/Settings";
+import NavigationPreferencesScreen from "./screens/NavigationPreferences";
 
 // Stack Navigator Screens and their parameters
 export type RootStackParamList = {
@@ -18,6 +19,7 @@ export type RootStackParamList = {
   Register: undefined;
   Login: undefined;
   Settings: undefined;
+  NavigationPreferences: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -50,6 +52,12 @@ export default function App() {
           name = "Settings"
           component = {SettingsScreen}
           options = {{title: "Settings"}}
+        >
+        </Stack.Screen>
+        <Stack.Screen
+          name = "NavigationPreferences"
+          component = {NavigationPreferencesScreen}
+          options = {{title: "Navigation Preferences"}}
         >
         </Stack.Screen>
       </Stack.Navigator>
