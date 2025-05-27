@@ -1,45 +1,87 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import Map from '../components/Map'; // Assuming you have a Map component
 import { RootStackParamList } from '../App';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FontAwesome } from "@expo/vector-icons";
 import SearchBar from '../components/SearchBar';
 import CurrentSpeed from '../components/CurrentSpeed';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PermissionsAndroid, Platform } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import * as Location from 'expo-location';
+import { FIREBASE_AUTH } from '../firebase';
+import {fetchUserSavedLocations } from '../SavedLocationsService';
 
-interface Props {
-  route: MainScreenRouteProp;
-}
+type MainScreenProps = NativeStackScreenProps<RootStackParamList, "MainScreen">;
 
-type MainScreenRouteProp = RouteProp<RootStackParamList, "MainScreen">;
-
-type MapScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "MainScreen"
->;
-
-
-export default function MapScreen() {
+export default function MapScreen({ navigation }: MainScreenProps) {
+  // Insets for the safe area handling of elements with absolute positioning
   const insets = useSafeAreaInsets();
+  // Firebase Authentication
+  const auth = FIREBASE_AUTH;
   
+  async function handleSavedLocations() {
+      var v = await fetchUserSavedLocations(auth.currentUser?.uid);
+      console.log("Got the following locations:");
+      console.log(v);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-        <TouchableOpacity style={[styles.optionsButton, { top: insets.top + 10, left: 10 }]}>
-            <FontAwesome name="cog" size={30} color="white" />
+        <TouchableOpacity style={[styles.optionsButton, { top: insets.top + 10, left: 10 }]} onPress={() => navigation.navigate("Settings")}>
+            <FontAwesome name="bars" size={30} color="white" />
         </TouchableOpacity>
-        <View style = {styles.map}>
-            <Map/>
-        </View>
+        <Map/>
         <View style={styles.speed}>
           <CurrentSpeed/>
         </View>
         <View style={styles.bottomBar}>
             <SearchBar/>
+            <ScrollView horizontal={true} style= {styles.savedLocations}>
+              <TouchableOpacity>
+                <View style = {styles.savedLocation}>
+                  <FontAwesome style={styles.savedLocationIcon} name="home" size={24} color="black" />
+                  <Text style={styles.savedLocationText}>Home</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+                <View style = {styles.savedLocation}>
+                  <FontAwesome style={styles.savedLocationIcon} name="briefcase" size={24} color="black" />
+                  <Text style={styles.savedLocationText}>Work</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity>
+              <View style = {styles.savedLocation}>
+                  <FontAwesome style={styles.savedLocationIcon} name="save" size={24} color="black" />
+                  <Text style={styles.savedLocationText}>NOVA FCT</Text>
+              </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress = {() => handleSavedLocations()}>
+              <View style = {styles.savedLocation}>
+                  <FontAwesome style={styles.savedLocationIcon} name="bookmark-o" size={24} color="black" />
+                  <Text style={styles.savedLocationText}>More</Text>
+              </View>
+              </TouchableOpacity>
+
+            </ScrollView>
         </View>
     </SafeAreaView>
   );
+}
+
+async function requestLocationPermission() {
+  if (Platform.OS === "android") {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
+  }
+  return true;
 }
 
 const styles = StyleSheet.create({
@@ -92,5 +134,36 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 300,
     left: -10,
+  },
+  savedLocations: {
+    width: '100%',
+    height: 100,
+    borderColor: 'white',
+    borderWidth: 1,
+    marginTop: 10,
+  },
+  savedLocation: {
+    height: 50,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 10,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  savedLocationIcon: {
+    borderColor: 'black',
+    borderWidth: 1,
+    marginRight: 10,
+  },
+  savedLocationText: {
+    fontSize: 16,
+    borderColor: 'black',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    borderWidth: 1,
+    color: 'black',
   }
 });

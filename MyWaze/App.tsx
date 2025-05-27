@@ -48,14 +48,9 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Map"
-          component={MapScreen}
-          options={{ title: "Map" }}
-        />
-        <Stack.Screen
           name = "Settings"
           component = {SettingsScreen}
-          options = {{title: "Settings"}}
+          options = {{title: "Settings", animation: 'slide_from_left',}}
         />
         <Stack.Screen
           name = "NavigationPreferences"
