@@ -20,7 +20,7 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
-import { createUserPreferences } from "../SettingsService";
+import { createUserPreferences } from "../UserPreferencesService";
 
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "Login">;

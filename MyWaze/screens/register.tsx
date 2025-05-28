@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@fir
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
 import { FontAwesome } from "@expo/vector-icons";
-import { createUserPreferences } from "../SettingsService";
+import { createUserPreferences } from "../UserPreferencesService";
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "Register">;
 
 export default function RegisterScreen({navigation}: RegisterScreenProps) {

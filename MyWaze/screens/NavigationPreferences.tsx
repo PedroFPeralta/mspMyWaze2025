@@ -23,7 +23,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import SettingsCategory from "../components/SettingsCategory";
 import { getFirestore } from "firebase/firestore";
-import { fetchUserPreferences, saveUserPreferences } from "../SettingsService";
+import { fetchUserPreferences, saveUserPreferences } from "../UserPreferencesService";
 
 type NavigationPreferencesScreenProps = NativeStackScreenProps<RootStackParamList, "NavigationPreferences">;
 type Preferences = {

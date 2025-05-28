@@ -13,6 +13,7 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from 'expo-location';
 import { FIREBASE_AUTH } from '../firebase';
 import {fetchUserSavedLocations } from '../SavedLocationsService';
+import { fetchUserPreferences } from '../UserPreferencesService';
 
 type MainScreenProps = NativeStackScreenProps<RootStackParamList, "MainScreen">;
 
@@ -21,26 +22,44 @@ export default function MapScreen({ navigation }: MainScreenProps) {
   const insets = useSafeAreaInsets();
   // Firebase Authentication
   const auth = FIREBASE_AUTH;
+  const user_id = auth.currentUser?.uid;
+  const [destination, setDestination] = useState<{ latitude: number; longitude: number }>(); // State to hold the destination coordinates
   
+  // This function is here to handle the fetching of saved locations when the "More" button is pressed
+  // When the user presses the "More" button, it will fetch the saved locations from the Firebase database and should navigate to a new screen or display them in some way.
+  // Make the new screen accept a list of saved locations as a prop and display them in a list.
   async function handleSavedLocations() {
       var v = await fetchUserSavedLocations(auth.currentUser?.uid);
       console.log("Got the following locations:");
       console.log(v);
   }
 
+  function driveToLocation(drivingPreferences?: any, ddestination?: { latitude: number; longitude: number }) {
+    // Example coordinates for Hotel Laitau
+    const NOVAFCT = {
+      latitude: 38.6613200247002, 
+      longitude: -9.205461561463805,
+    };
+
+    setDestination(NOVAFCT);
+  }
+
+
   return (
     <SafeAreaView style={styles.container}>
         <TouchableOpacity style={[styles.optionsButton, { top: insets.top + 10, left: 10 }]} onPress={() => navigation.navigate("Settings")}>
             <FontAwesome name="bars" size={30} color="white" />
         </TouchableOpacity>
-        <Map/>
+        <Map
+          destination={destination} // Example destination
+        />
         <View style={styles.speed}>
           <CurrentSpeed/>
         </View>
         <View style={styles.bottomBar}>
             <SearchBar/>
             <ScrollView horizontal={true} style= {styles.savedLocations}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => driveToLocation()}>
                 <View style = {styles.savedLocation}>
                   <FontAwesome style={styles.savedLocationIcon} name="home" size={24} color="black" />
                   <Text style={styles.savedLocationText}>Home</Text>
