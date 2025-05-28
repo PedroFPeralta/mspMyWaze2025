@@ -23,6 +23,8 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
   ]);
 
   const [isRegisterModalVis, setRegisterModalVis] = useState(false);
+  const [isEditModalVis, setEditModalVis] = useState(false);
+  const [selectedCarIndex, setSelectedCarIndex] = useState<number | null>(null);
 
   const addCar = () => {
     if (plate && type && fuel) {
@@ -31,6 +33,28 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
       setType("");
       setFuel("");
       setRegisterModalVis(false);
+    }
+  };
+
+  const openEditModal = (index: number) => {
+    const car = cars[index];
+    setPlate(car.plate);
+    setType(car.type);
+    setFuel(car.fuel);
+    setSelectedCarIndex(index);
+    setEditModalVis(true);
+  };
+
+  const editCar = () => {
+    if (selectedCarIndex !== null) {
+      const updatedCars = [...cars];
+      updatedCars[selectedCarIndex] = { plate, type, fuel };
+      setCars(updatedCars);
+      setPlate("");
+      setType("");
+      setFuel("");
+      setSelectedCarIndex(null);
+      setEditModalVis(false);
     }
   };
 
@@ -52,8 +76,8 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
     setCars((prevCars) => prevCars.filter((car) => car.plate !== plateToDelete));
   };
 
-  const renderItem = ({ item }: { item: Car }) => (
-    <View style={styles.carItem}>
+  const renderItem = ({ item, index }: { item: Car; index: number }) => (
+    <TouchableOpacity onPress={() => openEditModal(index)} style={styles.carItem}>
       <MaterialCommunityIcons name={getVehicleIconName(item.type)} size={28} color="#333" style={styles.vehicleIcon} />
 
       <View style={styles.carInfo}>
@@ -64,7 +88,7 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
       <TouchableOpacity onPress={() => deleteCar(item.plate)} style={styles.deleteButton}>
         <Text style={styles.deleteButtonText}>✕</Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -100,6 +124,43 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
             <TouchableOpacity
               style={[styles.button, { backgroundColor: "#999" }]}
               onPress={() => setRegisterModalVis(false)}
+            >
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal visible={isEditModalVis} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Car</Text>
+
+            <TextInput
+              placeholder="Plate"
+              value={plate}
+              onChangeText={setPlate}
+              editable={selectedCarIndex === null} // Editable only for register modal
+              style={[styles.input, selectedCarIndex !== null && { backgroundColor: "#eee" }]}
+            />
+            <TextInput
+              placeholder="Type (car/motorbike/truck)"
+              value={type}
+              onChangeText={setType}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Fuel (gasoline/diesel/electric)"
+              value={fuel}
+              onChangeText={setFuel}
+              style={styles.input}
+            />
+
+            <TouchableOpacity style={styles.button} onPress={editCar}>
+              <Text style={styles.buttonText}>Save Changes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "#999" }]}
+              onPress={() => setEditModalVis(false)}
             >
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
