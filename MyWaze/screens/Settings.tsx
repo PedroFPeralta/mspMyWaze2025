@@ -52,7 +52,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
           <SettingsCategory
             vectorIcon="car"
             title="Vehicle Details?"
-            onPress={() => null}
+            onPress={() => navigation.navigate("CarList")}
           />
         </View>
       </View>
