@@ -1,16 +1,28 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function CurrentSpeed() {
+type Props = {
+    speed?: number | null;
+    speedLimit?: string;
+    speedLimitExceeded?: boolean;
+};
+
+export default function CurrentSpeed({speed, speedLimit, speedLimitExceeded}: Props) {
+    const currentSpeed = speed?.toString().split(".")[0] ?? "0";
+    const currentSpeedLimit = speedLimit ?? "50";
+    const isSpeedLimitExceeded = speedLimitExceeded ?? false;
+
+
+
     return (
         <View>
             <View style={styles.currentSpeedLimit}>
                 <View style = {styles.currentSpeedCircle}>
-                    <Text style = {styles.speedText}>60</Text>
+                    <Text style = {styles.speedText}>{currentSpeed}</Text>
                     <Text style = {styles.measurementText}>km/h</Text>
                 </View>
                 <View style = {styles.speedLimitCircle}>
-                    <Text style = {styles.speedLimitText}>50</Text>
+                    <Text style = {styles.speedLimitText}>{currentSpeedLimit}</Text>
                 </View>
             </View>
         </View>

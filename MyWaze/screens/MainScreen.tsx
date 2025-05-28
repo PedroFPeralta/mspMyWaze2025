@@ -44,17 +44,48 @@ export default function MapScreen({ navigation }: MainScreenProps) {
     setDestination(NOVAFCT);
   }
 
+  function etaFormat(seconds: number){
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
 
+  const [currentSpeed, setCurrentSpeed] = useState<number | null>(null);
+  const [speedLimit, setSpeedLimit] = useState<string>("50"); // Example speed limit
+  const [speedLimitExceeded, setSpeedLimitExceeded] = useState<boolean>(false); // Example speed limit exceeded status
+  const [eta, setEta] = useState<number>();
+  const [etaText, setEtaText] = useState<string>("00:00");
   return (
     <SafeAreaView style={styles.container}>
-        <TouchableOpacity style={[styles.optionsButton, { top: insets.top + 10, left: 10 }]} onPress={() => navigation.navigate("Settings")}>
+        <TouchableOpacity style={[styles.optionsButton, { top: insets.top + 10, left: 10}]} onPress={() => navigation.navigate("Settings")}>
             <FontAwesome name="bars" size={30} color="white" />
         </TouchableOpacity>
         <Map
-          destination={destination} // Example destination
+          destination = {destination} // Example destination
+          setSpeed = {(speed: number | null) =>{
+            setCurrentSpeed(speed);
+            console.log("Current Speed:", speed);
+          }}
+          setEta={(eta: number | null) => {
+            console.log("eta is : ", eta);
+            if (eta !== null){
+              console.log("inside");
+              setEta(eta);
+              setEtaText(etaFormat(eta));
+            }
+          }}
+          
         />
         <View style={styles.speed}>
-          <CurrentSpeed/>
+          <CurrentSpeed
+            speed={ currentSpeed }
+            speedLimit={speedLimit} // Example speed limit, replace with actual speed limit from location updates
+            speedLimitExceeded={speedLimitExceeded} // Example speed limit exceeded status, replace with actual status from location updates
+          />
+        </View>
+        <View style={[styles.eta, {top: insets.top + 10}]}>
+          <Text style={[styles.etaText, {fontSize: 14}]}>ETA</Text>
+          <Text style={styles.etaText}>{etaText}</Text>  
         </View>
         <View style={styles.bottomBar}>
             <SearchBar/>
@@ -153,6 +184,25 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 300,
     left: -10,
+  },
+  eta:{
+    position: 'absolute',
+    alignSelf: "center",
+    width: 70,
+    height: 50,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "purple",
+    borderRadius: 18,
+    zIndex: 1,
+  },
+  etaText:{
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+
   },
   savedLocations: {
     width: '100%',

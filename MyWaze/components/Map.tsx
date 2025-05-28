@@ -6,7 +6,13 @@ import { StyleSheet } from "react-native";
 import { FIREBASE_AUTH } from "../firebase";
 import { fetchUserPreferences } from "../UserPreferencesService";
 
-export default function Map({destination}: {destination?: {latitude: number, longitude: number}}) {
+type Props = {
+    destination?: { latitude: number; longitude: number };
+    setSpeed: (speed: number | null) => void;
+    setEta: (eta: number | null) => void;
+};
+
+export default function Map({ destination, setSpeed, setEta }: Props) {
     const [location, setLocation] = useState<any>(null);
     const [following, setFollowing] = useState(true);
     const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w';
@@ -35,8 +41,16 @@ export default function Map({destination}: {destination?: {latitude: number, lon
             longitude: coord[0],
         }));
 
+        const eta = data.routes[0].duration;
+
         setRouteCoordinates(coordinates);
+        setEta(eta);
     }    
+
+    async function endTrip(){
+        // logic for when the user reaches destination
+        
+    }
 
 
     // Fetch user preferences from Firestore
@@ -58,16 +72,40 @@ export default function Map({destination}: {destination?: {latitude: number, lon
         }
 
         if (destination) {
-            drivingRoute(
-                { latitude: location.latitude, longitude: location.longitude },
-                destination
-            );
+            if(destination.latitude == location.latitude && destination.longitude == location.longitude){
+                endTrip();
+            }else{
+                drivingRoute({ latitude: location.latitude, longitude: location.longitude },destination);
+            }
         }else{
             // Emptty so it doesn't show a route when no destination is set (aka during initial load or whenever not driving)
             setRouteCoordinates([]);
         }
 
     }, [destination, user_id, location]);
+
+    async function getRouteDuration(origin, destination){
+        try {
+            var url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`;
+
+            preferences.avoid_tolls ? url += "&exclude=toll" : "";
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            const coordinates = data.routes[0].geometry.coordinates.map(coord => ({
+                latitude: coord[1],
+                longitude: coord[0],
+            }));
+                if (data.routes && data.routes.length > 0) {
+                    return data.routes[0].duration; // in seconds
+                }
+        } catch (error) {
+                console.error("Failed to fetch route:", error);
+            }
+
+        return 0;
+    };
 
     // Fecth the user's current location when the component mounts
     useEffect(() => {
@@ -90,8 +128,11 @@ export default function Map({destination}: {destination?: {latitude: number, lon
                 timeInterval: 1000,
                 distanceInterval: 5,
             },
-            (newLocation) => {
+            async (newLocation) => {
                 setLocation(newLocation.coords);
+                setSpeed(newLocation.coords.speed || null); // Set speed to null if not available
+
+                console.log(newLocation);
                 /*if (following) {
                     drivingRoute(
                         { latitude: newLocation.coords.latitude, longitude: newLocation.coords.longitude },
