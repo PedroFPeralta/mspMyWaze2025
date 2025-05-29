@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Modal, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { getAuth } from "firebase/auth";
+import { createVehicle, fetchVehicles, deleteVehicle } from "../VehicleService"; // Adjust path if needed
 
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "CarList">;
 
@@ -13,22 +15,38 @@ type Car = {
 };
 
 export default function CarListScreen({ navigation }: RegisterScreenProps) {
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
+
+  const [cars, setCars] = useState<Car[]>([]);
   const [plate, setPlate] = useState("");
   const [type, setType] = useState("");
   const [fuel, setFuel] = useState("");
-
-  const [cars, setCars] = useState<Car[]>([
-    { plate: "00-AA-01", type: "car", fuel: "gasoline" },
-    { plate: "11-BB-22", type: "motorbike", fuel: "electric" },
-  ]);
 
   const [isRegisterModalVis, setRegisterModalVis] = useState(false);
   const [isEditModalVis, setEditModalVis] = useState(false);
   const [selectedCarIndex, setSelectedCarIndex] = useState<number | null>(null);
 
-  const addCar = () => {
-    if (plate && type && fuel) {
-      setCars((prev) => [...prev, { plate, type, fuel }]);
+  useEffect(() => {
+    if (userId) {
+      loadVehicles();
+    }
+  }, [userId]);
+
+  const loadVehicles = async () => {
+    const data = await fetchVehicles(userId);
+    setCars(data);
+  };
+
+  const addCar = async () => {
+    if (plate && type && fuel && userId) {
+      const carData = {
+        licence_plate: plate,
+        gas_type: fuel,
+        vehicle_type: type,
+      };
+      await createVehicle(userId, carData);
+      await loadVehicles();
       setPlate("");
       setType("");
       setFuel("");
@@ -45,15 +63,19 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
     setEditModalVis(true);
   };
 
-  const editCar = () => {
-    if (selectedCarIndex !== null) {
-      const updatedCars = [...cars];
-      updatedCars[selectedCarIndex] = { plate, type, fuel };
-      setCars(updatedCars);
+  const editCar = async () => {
+    if (selectedCarIndex !== null && userId) {
+      const carData = {
+        licence_plate: plate,
+        gas_type: fuel,
+        vehicle_type: type,
+      };
+      await createVehicle(userId, carData); // same function used for update
+      await loadVehicles();
+      setSelectedCarIndex(null);
       setPlate("");
       setType("");
       setFuel("");
-      setSelectedCarIndex(null);
       setEditModalVis(false);
     }
   };
@@ -72,8 +94,11 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
     }
   };
 
-  const deleteCar = (plateToDelete: string) => {
-    setCars((prevCars) => prevCars.filter((car) => car.plate !== plateToDelete));
+  const deleteCar = async (plateToDelete: string) => {
+    if (userId) {
+      await deleteVehicle(userId, plateToDelete);
+      await loadVehicles();
+    }
   };
 
   const renderItem = ({ item, index }: { item: Car; index: number }) => (

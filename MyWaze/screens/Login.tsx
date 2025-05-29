@@ -1,27 +1,12 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  TextInput,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Button,
-} from "react-native";
+import { Text, View, TextInput, Image, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { FIREBASE_AUTH } from "../firebase";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "@firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "@firebase/auth";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../App";
-import {
-  NativeStackNavigatorProps,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import { NativeStackNavigatorProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
 import { createUserPreferences } from "../UserPreferencesService";
-
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -45,7 +30,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       setIsLoading(true); // Set loading state to true
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log("Login successful:", response);
-      navigation.navigate("Map", {}); // Navigate to the Map screen after successful login
+      navigation.navigate("MainScreen", undefined); // Navigate to the Map screen after successful login
     } catch (error) {
       console.error("Login error:", error);
     } finally {
@@ -64,7 +49,18 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   return (
     <View style={styles.container}>
       <FontAwesome name="user" size={80} color="white" />
-      <Text style={{fontSize: 24, fontWeight: "bold", color:"whitesmoke", textShadowColor: 'black', textShadowOffset: { width: 1.5, height: 1.5 }, textShadowRadius: 1,}}>Login</Text>
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          color: "whitesmoke",
+          textShadowColor: "black",
+          textShadowOffset: { width: 1.5, height: 1.5 },
+          textShadowRadius: 1,
+        }}
+      >
+        Login
+      </Text>
       <View style={styles.loginContainer}>
         <View style={styles.inputContainer}>
           <TextInput
@@ -74,35 +70,36 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             onChangeText={(value) => setEmail(value)}
           />
           <TextInput
-                                  style = {styles.textInput}
-                                  placeholder="Password"
-                                  value = {password}
-                                  onChangeText={(value) => setPassword(value)} secureTextEntry={passwordVisible}
+            style={styles.textInput}
+            placeholder="Password"
+            value={password}
+            onChangeText={(value) => setPassword(value)}
+            secureTextEntry={passwordVisible}
           />
         </View>
         <TouchableOpacity onPress={togglePasswordVisibility}>
-          {passwordVisible ? 
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome name="eye" size={24} color="black" />
-                <Text> Show </Text>
-              </View>
-          : 
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome name="eye-slash" size={24} color="black" />
-                <Text> Hide </Text>
-              </View>
-          }
+          {passwordVisible ? (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <FontAwesome name="eye" size={24} color="black" />
+              <Text> Show </Text>
+            </View>
+          ) : (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <FontAwesome name="eye-slash" size={24} color="black" />
+              <Text> Hide </Text>
+            </View>
+          )}
         </TouchableOpacity>
         {isLoading ? (
-            <Text>Loading...</Text>
+          <Text>Loading...</Text>
         ) : (
           <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={[styles.button, styles.buttonBack]} onPress={() => navigation.goBack()}>
-                                                          <Text style={styles.buttonText}>Back</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
-                                                          <Text style={styles.buttonText}>Login</Text>
-                                </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, styles.buttonBack]} onPress={() => navigation.goBack()}>
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -111,21 +108,20 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           title="skip"
           onPress={() => customSkip()}
           color="#5A189A" // deep purple
-          />
+        />
       </TouchableOpacity>
     </View>
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#A3D5FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#A3D5FF",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  imageContainer:{
+  imageContainer: {
     width: 90,
     height: 90,
   },
@@ -141,7 +137,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
   },
-  inputContainer:{
+  inputContainer: {
     borderWidth: 1,
     borderColor: "purple",
     height: 160,
@@ -151,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  textInput:{
+  textInput: {
     borderWidth: 2,
     borderColor: "black",
     textAlign: "center",
@@ -161,7 +157,7 @@ const styles = StyleSheet.create({
     width: "80%",
     height: 40,
   },
-  buttonContainer:{
+  buttonContainer: {
     display: "flex",
     flexDirection: "row",
     borderColor: "purple",
@@ -170,21 +166,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "80%",
   },
-  button:{
-      backgroundColor: '#5A189A', // deep purple
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 25,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 5,
+  button: {
+    backgroundColor: "#5A189A", // deep purple
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 5,
   },
   buttonBack: {
-    backgroundColor: 'grey',
+    backgroundColor: "grey",
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-  }
+  },
 });
