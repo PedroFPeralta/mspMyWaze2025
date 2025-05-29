@@ -67,7 +67,7 @@ export default function App() {
         <Stack.Screen
           name = "CarList"
           component = {CarListScreen}
-          options = {{headerShown: false}}
+          options = {{title: "Car List"}}
         />
       </Stack.Navigator>
     </NavigationContainer>

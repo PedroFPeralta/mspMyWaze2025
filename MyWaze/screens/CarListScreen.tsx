@@ -197,6 +197,7 @@ export default function CarListScreen({ navigation }: RegisterScreenProps) {
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     padding: 16,
@@ -229,6 +230,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+
   carPlate: {
     fontWeight: "bold",
   },
