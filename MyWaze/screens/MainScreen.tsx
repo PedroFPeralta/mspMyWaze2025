@@ -61,6 +61,10 @@ export default function MapScreen({ navigation }: MainScreenProps) {
   const [distanceKm, setDistanceKm] = useState<number | null>(null);
   const [via, setVia] = useState<string>("");
 
+  function handleDriveToLocation() {
+    setNavigateToDestinationModalVisibility(true); // Close the modal
+  }
+
   return (
     <SafeAreaView style={styles.container}>
         <TouchableOpacity style={[styles.optionsButton, { top: insets.top + 10, left: 10}]} onPress={() => navigation.navigate("Settings")}>
@@ -105,7 +109,7 @@ export default function MapScreen({ navigation }: MainScreenProps) {
         <View style={styles.bottomBar}>
             <SearchBar/>
             <ScrollView horizontal={true} style= {styles.savedLocations}>
-              <TouchableOpacity onPress={() => driveToLocation()}>
+              <TouchableOpacity onPress={() => handleDriveToLocation()}>
                 <View style = {styles.savedLocation}>
                   <FontAwesome style={styles.savedLocationIcon} name="home" size={24} color="black" />
                   <Text style={styles.savedLocationText}>Home</Text>
@@ -141,6 +145,7 @@ export default function MapScreen({ navigation }: MainScreenProps) {
           duration= {etaText}
           visibility = {navigateToDestinationModalVisibility} // Control the visibility of the modal
           onCancel={() => setNavigateToDestinationModalVisibility(false)} // Function to call when the user cancels the navigation
+          onConfirm={() => {driveToLocation(); setNavigateToDestinationModalVisibility(false)}} // Function to call when the user confirms the navigation
           via = {via}
           //onConfirm={() => driveToLocation()} // Function to call when the user confirms the navigation
         />

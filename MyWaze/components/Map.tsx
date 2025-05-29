@@ -54,9 +54,52 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
                 setRouteCoordinates(coordinates);
                 setEta(route.duration);
                 setDistance(route.distance);
-                const via = route.legs[0].summary || ""; // Assuming 'via' is an array of waypoints
-                console.log("via be: ", via);
-                setVia(via); // Assuming 'via' is an array of waypoints
+                const legs = route.legs;
+                var viaText = "";
+                for (let i = 0; i < legs.length; i++) {
+                    viaText += legs[i].summary + " ";
+                }
+                console.log("via be: ", viaText);
+                setVia(viaText); // Assuming 'via' is an array of waypoints
+                console.log("Route started:", route.summary);
+            }
+        } catch (error) {
+            console.error("Error starting driving route:", error);
+        }
+    };
+
+    // --- Centralized Route Starter Function with a Stop (hard coded) ---
+    const startDrivingRouteWithStop = async (
+        origin: { latitude: number; longitude: number },
+        stop: { latitude: number; longitude: number },
+        dest: { latitude: number; longitude: number }
+    ) => {
+        if (!origin || !dest || !stop || !preferences) return;
+
+        try {
+            let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.longitude},${origin.latitude};${stop.longitude},${stop.latitude};${dest.longitude},${dest.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`;
+            if (preferences.avoid_tolls) url += "&exclude=toll";
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.routes?.length > 0) {
+                const route = data.routes[0];
+                const coordinates = route.geometry.coordinates.map(([lon, lat]) => ({
+                    latitude: lat,
+                    longitude: lon,
+                }));
+
+                setRouteCoordinates(coordinates);
+                setEta(route.duration);
+                setDistance(route.distance);
+                const legs = route.legs;
+                var viaText = "";
+                for (let i = 0; i < legs.length; i++) {
+                    viaText += legs[i].summary + " ";
+                }
+                console.log("via be: ", viaText);
+                setVia(viaText); // Assuming 'via' is an array of waypoints
                 console.log("Route started:", route.summary);
             }
         } catch (error) {
@@ -101,7 +144,12 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
             endTrip();
         } else {
             console.log("Starting route...");
-            startDrivingRoute(location, destination);
+            //startDrivingRoute(location, destination);
+            startDrivingRouteWithStop( // Working with a stop
+                location,
+                { latitude: 38.53756861973558, longitude: -8.889270647631218 }, // Example stop
+                destination
+            );
         }
     }, [location, destination, preferences]);
 
@@ -179,6 +227,7 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
                         longitudeDelta: 0.01,
                     }}
                 >
+
                 <Marker
                     coordinate={{
                     latitude: location.latitude,
