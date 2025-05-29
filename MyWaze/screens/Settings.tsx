@@ -21,7 +21,7 @@ import {
 } from "@react-navigation/native-stack";
 import { FontAwesome } from "@expo/vector-icons";
 import SettingsCategory from "../components/SettingsCategory";
-import { fetchUserPreferences } from "../SettingsService";
+import { fetchUserPreferences } from "../UserPreferencesService";
 
 type SettingsScreenProps = NativeStackScreenProps<RootStackParamList, "Settings">;
 

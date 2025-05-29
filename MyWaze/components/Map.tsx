@@ -10,9 +10,11 @@ type Props = {
     destination?: { latitude: number; longitude: number };
     setSpeed: (speed: number | null) => void;
     setEta: (eta: number | null) => void;
+    setDistance: (distance: number | null) => void;
+    setVia: (via: string) => void;
 };
 
-export default function Map({ destination, setSpeed, setEta }: Props) {
+export default function Map({ destination, setSpeed, setEta, setDistance, setVia}: Props) {
     const [location, setLocation] = useState<any>(null);
     const [following, setFollowing] = useState(true);
     const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w';
@@ -27,25 +29,41 @@ export default function Map({ destination, setSpeed, setEta }: Props) {
         latitude: 37.78825,
         longitude: -122.4324,
     };
-    
-    async function drivingRoute (origin, destination) {
-        var url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`;
 
-        preferences.avoid_tolls ? url += "&exclude=toll" : "";
+    // --- Centralized Route Starter Function ---
+    const startDrivingRoute = async (
+        origin: { latitude: number; longitude: number },
+        dest: { latitude: number; longitude: number }
+    ) => {
+        if (!origin || !dest || !preferences) return;
 
-        const response = await fetch(url);
-        const data = await response.json();
+        try {
+            let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin.longitude},${origin.latitude};${dest.longitude},${dest.latitude}?geometries=geojson&access_token=${MAPBOX_ACCESS_TOKEN}`;
+            if (preferences.avoid_tolls) url += "&exclude=toll";
 
-        const coordinates = data.routes[0].geometry.coordinates.map(coord => ({
-            latitude: coord[1],
-            longitude: coord[0],
-        }));
+            const response = await fetch(url);
+            const data = await response.json();
 
-        const eta = data.routes[0].duration;
+            if (data.routes?.length > 0) {
+                const route = data.routes[0];
+                const coordinates = route.geometry.coordinates.map(([lon, lat]) => ({
+                    latitude: lat,
+                    longitude: lon,
+                }));
 
-        setRouteCoordinates(coordinates);
-        setEta(eta);
-    }    
+                setRouteCoordinates(coordinates);
+                setEta(route.duration);
+                setDistance(route.distance);
+                const via = route.legs[0].summary || ""; // Assuming 'via' is an array of waypoints
+                console.log("via be: ", via);
+                setVia(via); // Assuming 'via' is an array of waypoints
+                console.log("Route started:", route.summary);
+            }
+        } catch (error) {
+            console.error("Error starting driving route:", error);
+        }
+    };
+
 
     async function endTrip(){
         // logic for when the user reaches destination
@@ -58,7 +76,7 @@ export default function Map({ destination, setSpeed, setEta }: Props) {
       try {
         const fe = await fetchUserPreferences(user_id);
         setPreferences(fe); // Set to first element or undefined
-        console.log("User Preferences:", fe);
+
       } catch (error) {
         console.error("Error fetching user preferences:", error);
       }
@@ -66,23 +84,26 @@ export default function Map({ destination, setSpeed, setEta }: Props) {
   
 
     useEffect(() => {
-        if (user_id) {
-            fetchPreferences();
-            console.log("useEffect(): ", preferences)
-        }
+        if (user_id) fetchPreferences();
+    }, [user_id]);
 
-        if (destination) {
-            if(destination.latitude == location.latitude && destination.longitude == location.longitude){
-                endTrip();
-            }else{
-                drivingRoute({ latitude: location.latitude, longitude: location.longitude },destination);
-            }
-        }else{
-            // Emptty so it doesn't show a route when no destination is set (aka during initial load or whenever not driving)
+    useEffect(() => {
+        if (!location || !destination) {
             setRouteCoordinates([]);
+            return;
         }
 
-    }, [destination, user_id, location]);
+        const hasArrived =
+            destination.latitude === location.latitude &&
+            destination.longitude === location.longitude;
+
+        if (hasArrived) {
+            endTrip();
+        } else {
+            console.log("Starting route...");
+            startDrivingRoute(location, destination);
+        }
+    }, [location, destination, preferences]);
 
     async function getRouteDuration(origin, destination){
         try {
@@ -131,7 +152,7 @@ export default function Map({ destination, setSpeed, setEta }: Props) {
             async (newLocation) => {
                 setLocation(newLocation.coords);
                 setSpeed(newLocation.coords.speed || null); // Set speed to null if not available
-
+                
                 console.log(newLocation);
                 /*if (following) {
                     drivingRoute(

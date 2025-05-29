@@ -14,6 +14,7 @@ import * as Location from 'expo-location';
 import { FIREBASE_AUTH } from '../firebase';
 import {fetchUserSavedLocations } from '../SavedLocationsService';
 import { fetchUserPreferences } from '../UserPreferencesService';
+import NavigateToDestination from '../components/NavigateToDestination';
 
 type MainScreenProps = NativeStackScreenProps<RootStackParamList, "MainScreen">;
 
@@ -24,6 +25,8 @@ export default function MapScreen({ navigation }: MainScreenProps) {
   const auth = FIREBASE_AUTH;
   const user_id = auth.currentUser?.uid;
   const [destination, setDestination] = useState<{ latitude: number; longitude: number }>(); // State to hold the destination coordinates
+  const [navigateToDestinationModalVisibility, setNavigateToDestinationModalVisibility] = useState<boolean>(false);
+  const [destinationText, setDestinationText] = useState<string>("NOVA FCT1"); // Example destination text
   
   // This function is here to handle the fetching of saved locations when the "More" button is pressed
   // When the user presses the "More" button, it will fetch the saved locations from the Firebase database and should navigate to a new screen or display them in some way.
@@ -55,6 +58,9 @@ export default function MapScreen({ navigation }: MainScreenProps) {
   const [speedLimitExceeded, setSpeedLimitExceeded] = useState<boolean>(false); // Example speed limit exceeded status
   const [eta, setEta] = useState<number>();
   const [etaText, setEtaText] = useState<string>("00:00");
+  const [distanceKm, setDistanceKm] = useState<number | null>(null);
+  const [via, setVia] = useState<string>("");
+
   return (
     <SafeAreaView style={styles.container}>
         <TouchableOpacity style={[styles.optionsButton, { top: insets.top + 10, left: 10}]} onPress={() => navigation.navigate("Settings")}>
@@ -74,7 +80,16 @@ export default function MapScreen({ navigation }: MainScreenProps) {
               setEtaText(etaFormat(eta));
             }
           }}
-          
+          setDistance={(distance: number | null) => {
+            console.log("Distance is: ", distance);
+            if (distance !== null) {
+              setDistanceKm(distance / 1000); // Convert to kilometers
+            }
+          }}
+          setVia={(via: string) => {
+            console.log("Via is: ", via);
+            setVia(via);
+          }}
         />
         <View style={styles.speed}>
           <CurrentSpeed
@@ -104,7 +119,7 @@ export default function MapScreen({ navigation }: MainScreenProps) {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => {setNavigateToDestinationModalVisibility(true);}}>
               <View style = {styles.savedLocation}>
                   <FontAwesome style={styles.savedLocationIcon} name="save" size={24} color="black" />
                   <Text style={styles.savedLocationText}>NOVA FCT</Text>
@@ -120,6 +135,15 @@ export default function MapScreen({ navigation }: MainScreenProps) {
 
             </ScrollView>
         </View>
+        <NavigateToDestination
+          destination= {destinationText}
+          distance= {distanceKm ? distanceKm : 0}
+          duration= {etaText}
+          visibility = {navigateToDestinationModalVisibility} // Control the visibility of the modal
+          onCancel={() => setNavigateToDestinationModalVisibility(false)} // Function to call when the user cancels the navigation
+          via = {via}
+          //onConfirm={() => driveToLocation()} // Function to call when the user confirms the navigation
+        />
     </SafeAreaView>
   );
 }
@@ -154,7 +178,7 @@ const styles = StyleSheet.create({
   optionsButton: {
     width: 50, 
     height: 50, 
-    backgroundColor: "purple", 
+    backgroundColor: "#A3D5FF", 
     position: "absolute", 
     justifyContent: "center",
     alignItems: "center",
@@ -194,7 +218,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "purple",
+    backgroundColor: "#A3D5FF",
     borderRadius: 18,
     zIndex: 1,
   },
@@ -234,5 +258,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     borderWidth: 1,
     color: 'black',
-  }
+  },
+  navigateToDestinationModal: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
 });
