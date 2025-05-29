@@ -27,6 +27,8 @@ const MapScreen = ({ route }: Props) => {
 
   const navigation = useNavigation<MapScreenNavigationProp>();
 
+  
+
   useEffect(() => {
     if (!origin || !destination) {
       setLoading(false);
