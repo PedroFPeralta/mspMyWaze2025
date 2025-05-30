@@ -29,12 +29,11 @@ import * as Location from "expo-location";
 import { FIREBASE_AUTH } from "../firebase";
 import { fetchUserSavedLocations } from "../SavedLocationsService";
 import { fetchUserPreferences } from "../UserPreferencesService";
-import { DestinationProvider, useDestinationCoords } from "./RouteForm";
 import NavigateToDestination from "../components/NavigateToDestination";
 
 type MainScreenProps = NativeStackScreenProps<RootStackParamList, "MainScreen">;
 
-export default function MapScreen({ navigation }: MainScreenProps) {
+export default function MapScreen({ navigation, route }: MainScreenProps) {
   // Insets for the safe area handling of elements with absolute positioning
   const insets = useSafeAreaInsets();
   // Firebase Authentication
@@ -49,6 +48,9 @@ export default function MapScreen({ navigation }: MainScreenProps) {
     setNavigateToDestinationModalVisibility,
   ] = useState<boolean>(false);
   const [destinationText, setDestinationText] = useState<string>("NOVA FCT1"); // Example destination text
+  const { destinationCoords } = route.params ?? {};
+
+  console.log("Prop Coords: " + destinationCoords);
 
   // This function is here to handle the fetching of saved locations when the "More" button is pressed
   // When the user presses the "More" button, it will fetch the saved locations from the Firebase database and should navigate to a new screen or display them in some way.
@@ -88,8 +90,6 @@ export default function MapScreen({ navigation }: MainScreenProps) {
   const [etaText, setEtaText] = useState<string>("00:00");
   const [distanceKm, setDistanceKm] = useState<number | null>(null);
   const [via, setVia] = useState<string>("");
-
-  const { destinationCoords, setDestinationCoords } = useDestinationCoords();
 
   function handleDriveToLocation() {
     setNavigateToDestinationModalVisibility(true); // Close the modal

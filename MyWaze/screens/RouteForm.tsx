@@ -19,40 +19,6 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<
   "Route"
 >;
 
-// Context for destination setting
-type DestinationCoords = [number, number] | undefined;
-
-interface DestinationContextType {
-  destinationCoords: DestinationCoords;
-  setDestinationCoords: (value: DestinationCoords) => void;
-}
-
-const DestinationContext = createContext<DestinationContextType | undefined>(
-  undefined
-);
-
-export const DestinationProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [destinationCoords, setDestinationCoords] =
-    useState<DestinationCoords>(undefined);
-
-  return (
-    <DestinationContext.Provider
-      value={{ destinationCoords, setDestinationCoords }}
-    >
-      {children}
-    </DestinationContext.Provider>
-  );
-};
-
-export const useDestinationCoords = (): DestinationContextType => {
-  const context = useContext(DestinationContext);
-  if (!context)
-    throw new Error("useDestination must be used within a DestinationProvider");
-  return context;
-};
-
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w"; // Replace with your Mapbox token
 
@@ -62,8 +28,6 @@ const RouteForm = () => {
   const [endCoords, setEndCoords] = useState([]);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
-
-  const { destinationCoords, setDestinationCoords } = useDestinationCoords();
 
   // Function to search for Mapbox suggestions
   const fetchSuggestions = async (query: string, setSuggestions: Function) => {
@@ -99,9 +63,10 @@ const RouteForm = () => {
     if (!end) return alert("Fill destinaton field!");
     console.log("Destination:", end);
 
-    setDestinationCoords([endCoords[0], endCoords[1]]);
     //call service to save location in database;
-    navigation.navigate("MainScreen");
+    navigation.navigate("MainScreen", {
+      destinationCoords: [endCoords[0], endCoords[1]],
+    });
     Keyboard.dismiss();
   };
 
