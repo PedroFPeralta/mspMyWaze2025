@@ -100,8 +100,7 @@ const RouteForm = () => {
     console.log("Destination:", end);
 
     setDestinationCoords([endCoords[0], endCoords[1]]);
-    // Here you would typically handle the route confirmation logic
-    // For example, you might want to navigate to a map screen or fetch route data
+    //call service to save location in database;
     navigation.navigate("MainScreen");
     Keyboard.dismiss();
   };
@@ -149,6 +148,18 @@ const RouteForm = () => {
           <Text style={{ color: "#fff" }}>📍 Confirm</Text>
         </TouchableOpacity>
       </View>
+
+      <View
+        style={{
+          borderBottomColor: "#ccc",
+          borderBottomWidth: 1,
+          marginVertical: 16,
+        }}
+      />
+
+      <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>
+        Recent history
+      </Text>
     </View>
   );
 };
