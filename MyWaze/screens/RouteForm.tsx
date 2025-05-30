@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import {
   View,
   TextInput,
@@ -16,22 +16,54 @@ import { RootStackParamList } from "../App";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  "Home"
+  "Route"
 >;
+
+// Context for destination setting
+type DestinationCoords = [number, number] | undefined;
+
+interface DestinationContextType {
+  destinationCoords: DestinationCoords;
+  setDestinationCoords: (value: DestinationCoords) => void;
+}
+
+const DestinationContext = createContext<DestinationContextType | undefined>(
+  undefined
+);
+
+export const DestinationProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [destinationCoords, setDestinationCoords] =
+    useState<DestinationCoords>(undefined);
+
+  return (
+    <DestinationContext.Provider
+      value={{ destinationCoords, setDestinationCoords }}
+    >
+      {children}
+    </DestinationContext.Provider>
+  );
+};
+
+export const useDestinationCoords = (): DestinationContextType => {
+  const context = useContext(DestinationContext);
+  if (!context)
+    throw new Error("useDestination must be used within a DestinationProvider");
+  return context;
+};
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w"; // Replace with your Mapbox token
 
 const RouteForm = () => {
-  const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
-  const [startSuggestions, setStartSuggestions] = useState<Array<any>>([]);
   const [endSuggestions, setEndSuggestions] = useState<Array<any>>([]);
-  const [isSelectingStart, setIsSelectingStart] = useState(true);
-  const [startCoords, setStartCoords] = useState([]);
   const [endCoords, setEndCoords] = useState([]);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  const { destinationCoords, setDestinationCoords } = useDestinationCoords();
 
   // Function to search for Mapbox suggestions
   const fetchSuggestions = async (query: string, setSuggestions: Function) => {
@@ -60,29 +92,17 @@ const RouteForm = () => {
   };
 
   useEffect(() => {
-    fetchSuggestions(start, setStartSuggestions);
-  }, [start]);
-
-  useEffect(() => {
     fetchSuggestions(end, setEndSuggestions);
   }, [end]);
 
-  const handleSwap = () => {
-    setStart(end);
-    setEnd(start);
-  };
-
   const handleConfirmRoute = () => {
-    if (!start || !end) return alert("Fill in both fields!");
-    console.log("Departure:", start);
+    if (!end) return alert("Fill destinaton field!");
     console.log("Destination:", end);
 
+    setDestinationCoords([endCoords[0], endCoords[1]]);
     // Here you would typically handle the route confirmation logic
     // For example, you might want to navigate to a map screen or fetch route data
-    navigation.navigate("Map", {
-      origin: [startCoords[0], startCoords[1]],
-      destination: [endCoords[0], endCoords[1]],
-    });
+    navigation.navigate("MainScreen");
     Keyboard.dismiss();
   };
 
@@ -107,38 +127,14 @@ const RouteForm = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>📍 Departure Location</Text>
-      <TextInput
-        style={styles.input}
-        value={start}
-        onChangeText={setStart}
-        onFocus={() => setIsSelectingStart(true)}
-        placeholder="Ex: Rua Afonso Costa"
-      />
-      {isSelectingStart && startSuggestions.length > 0 && (
-        <FlatList
-          data={startSuggestions}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) =>
-            renderSuggestion(
-              item,
-              setStart,
-              setStartSuggestions,
-              setStartCoords
-            )
-          }
-        />
-      )}
-
       <Text style={styles.label}>🏁 Destination</Text>
       <TextInput
         style={styles.input}
         value={end}
         onChangeText={setEnd}
-        onFocus={() => setIsSelectingStart(false)}
         placeholder="Ex: Avenida da Liberdade"
       />
-      {!isSelectingStart && endSuggestions.length > 0 && (
+      {endSuggestions.length > 0 && (
         <FlatList
           data={endSuggestions}
           keyExtractor={(item) => item.id}
@@ -149,9 +145,6 @@ const RouteForm = () => {
       )}
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.buttonAlt} onPress={handleSwap}>
-          <Text>🔄 Switch</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleConfirmRoute}>
           <Text style={{ color: "#fff" }}>📍 Confirm</Text>
         </TouchableOpacity>
