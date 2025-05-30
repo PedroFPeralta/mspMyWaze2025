@@ -14,6 +14,9 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
 
+import { fetchUserHistory, saveUserTrip } from "../RecentHistoryService";
+import { FIREBASE_AUTH } from "../firebase";
+
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "Route"
@@ -26,8 +29,36 @@ const RouteForm = () => {
   const [end, setEnd] = useState("");
   const [endSuggestions, setEndSuggestions] = useState<Array<any>>([]);
   const [endCoords, setEndCoords] = useState([]);
+  const [recentHistory, setRecentHistory] = useState<any[]>([]);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  const auth = FIREBASE_AUTH;
+  const user_id = auth.currentUser?.uid;
+
+  const fetchHistory = async () => {
+    try {
+      const data = await fetchUserHistory(user_id);
+      setRecentHistory(data ?? []);
+      console.log("history fetch: " + JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error("Error fetching user history:", error);
+    }
+  };
+
+  const saveTrip = async (location) => {
+    try {
+      const data = await saveUserTrip(user_id, location);
+    } catch (error) {
+      console.error("Error saving user history:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (user_id) {
+      fetchHistory();
+    }
+  }, [user_id]);
 
   // Function to search for Mapbox suggestions
   const fetchSuggestions = async (query: string, setSuggestions: Function) => {
@@ -61,7 +92,17 @@ const RouteForm = () => {
 
   const handleConfirmRoute = () => {
     if (!end) return alert("Fill destinaton field!");
-    console.log("Destination:", end);
+
+    //save name long lat
+    let location = {
+      locationName: end,
+      coords: {
+        long: endCoords[0],
+        lat: endCoords[1],
+      },
+    };
+
+    saveTrip(location);
 
     //call service to save location in database;
     navigation.navigate("MainScreen", {
@@ -125,6 +166,20 @@ const RouteForm = () => {
       <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>
         Recent history
       </Text>
+
+      {recentHistory.map((location, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.suggestion}
+          onPress={() => {
+            navigation.navigate("MainScreen", {
+              destinationCoords: [location.coords.long, location.coords.lat],
+            });
+          }}
+        >
+          <Text>{location.locationName}</Text>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };

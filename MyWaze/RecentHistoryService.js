@@ -3,15 +3,14 @@ import { FIRESTORE_DB } from "./firebase";
 
 export const fetchUserHistory = async (userId) => {
   try {
-    const docRef = doc(FIRESTORE_DB, "user_history", userId);
+    const docRef = doc(FIRESTORE_DB, "saved_locations", userId, "location", "history");
     const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      const history = docSnap.data().history || [];
-      return history.slice(0, 5); // Ensures max 5
+    if (!docSnap.exists()) {
+      console.log("history doesn't exist")
     }
 
-    return [];
+    return docSnap.data().historyList;
   } catch (error) {
     console.error("Error fetching user history:", error);
     return [];
@@ -19,28 +18,52 @@ export const fetchUserHistory = async (userId) => {
 };
 
 
-export const saveUserTrip = async (userId, locationName) => {
+export const saveUserTrip = async (userId, location) => {
   try {
-    const docRef = doc(FIRESTORE_DB, "user_history", userId);
+    const docRef = doc(FIRESTORE_DB, "saved_locations", userId, "location", "history");
     const docSnap = await getDoc(docRef);
+    console.log("history0: " + JSON.stringify(docSnap.data(), null, 2));
 
-    let history = [];
+    let historyList = [];
 
-    if (docSnap.exists()) {
-      history = docSnap.data().history || [];
+    if (!docSnap.exists()) {
+      await createUserHistory(userId, location);
+      return location;
+    } else {
+      historyList = docSnap.data().historyList || [];
+      console.log("history1: " + JSON.stringify(historyList, null, 2));
     }
 
-    // Add to front, remove duplicates, trim to 5
-    history = [locationName, ...history.filter(item => item !== locationName)].slice(0, 5);
+    // Remove duplicates based on name or coordinates
+    historyList = historyList.filter(item => item.locationName !== location.locationName );
 
-    await setDoc(docRef, { history });
+    console.log("history1.5: " + JSON.stringify(historyList, null, 2));
 
-    return docRef.id;
+    // Add new location to the front and trim to last 5
+    historyList = [location, ...historyList].slice(0, 5);
+
+    await setDoc(docRef, { historyList });
+    console.log("history2: " + JSON.stringify(historyList, null, 2));
+    return historyList;
   } catch (error) {
     console.error("Error saving recent trip:", error);
     throw error;
   }
 };
+
+
+const createUserHistory = async ( userId, location ) => {
+  try {
+    const docRef = doc(FIRESTORE_DB, "saved_locations", userId, "location", "history");
+    await setDoc(docRef, { history: [location] });
+    console.log("User history created with ID: ", docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating user history:", error);
+    throw error;
+  }
+};
+
 
 
 
