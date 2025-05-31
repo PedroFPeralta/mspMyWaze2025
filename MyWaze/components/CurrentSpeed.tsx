@@ -12,7 +12,7 @@ export default function CurrentSpeed({speed, speedLimit, speedLimitExceeded}: Pr
     const currentSpeedLimit = speedLimit ?? "50";
 
     
-    const numericalCurrentSpeed = typeof speed === 'number' ? speed : parseInt(currentSpeed, 10);
+    const numericalCurrentSpeed = parseInt(currentSpeed, 10);
     const numericalSpeedLimit = parseInt(currentSpeedLimit, 10);
     const isSpeedLimitExceeded = numericalCurrentSpeed > numericalSpeedLimit;
 
