@@ -10,7 +10,14 @@ type Props = {
 export default function CurrentSpeed({speed, speedLimit, speedLimitExceeded}: Props) {
     const currentSpeed = speed?.toString().split(".")[0] ?? "0";
     const currentSpeedLimit = speedLimit ?? "50";
-    const isSpeedLimitExceeded = speedLimitExceeded ?? false;
+
+    
+    const numericalCurrentSpeed = typeof speed === 'number' ? speed : parseInt(currentSpeed, 10);
+    const numericalSpeedLimit = parseInt(currentSpeedLimit, 10);
+    const isSpeedLimitExceeded = numericalCurrentSpeed > numericalSpeedLimit;
+
+    const speedLimitBorderColor = isSpeedLimitExceeded ?  '#c20000': '#8B0000';
+    const speedLimitBackgroundColor = isSpeedLimitExceeded ? '#FFB6C1' : 'white';
 
 
 
@@ -21,8 +28,9 @@ export default function CurrentSpeed({speed, speedLimit, speedLimitExceeded}: Pr
                     <Text style = {styles.speedText}>{currentSpeed}</Text>
                     <Text style = {styles.measurementText}>km/h</Text>
                 </View>
-                <View style = {styles.speedLimitCircle}>
-                    <Text style = {styles.speedLimitText}>{currentSpeedLimit}</Text>
+
+                <View style={[styles.speedLimitCircle, { borderColor: speedLimitBorderColor, backgroundColor: speedLimitBackgroundColor }]}>
+                    <Text style={styles.speedLimitText}>{currentSpeedLimit}</Text>
                 </View>
             </View>
         </View>
@@ -72,12 +80,12 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 50,
-        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 5,
-        borderColor: 'red',
+        borderWidth: 5,       
         borderStyle: "solid",
+        //backgroundColor: 'white',
+        //borderColor: 'red',
     },
     speedLimitText: {
         fontSize: 24,
