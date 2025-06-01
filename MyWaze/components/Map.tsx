@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import React, { useEffect, useReducer, useState } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { StyleSheet } from "react-native";
@@ -16,19 +16,47 @@ type Props = {
 
 export default function Map({ destination, setSpeed, setEta, setDistance, setVia}: Props) {
     const [location, setLocation] = useState<any>(null);
-    const [following, setFollowing] = useState(true);
     const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoicG10LWxvcGVzIiwiYSI6ImNtOXJsaTQzdjFzZ3MybHI3emd4bmsweWYifQ.z-0_UT1w3xkJuXu3LgFM7w';
     const [routeCoordinates, setRouteCoordinates] = useState<any[]>([]);
     
+    const mapRef = React.useRef<MapView>(null);
+
     const auth = FIREBASE_AUTH;
     const user_id = auth.currentUser?.uid;
     const [preferences, setPreferences] = useState<any>();
+    
+    const zoomRef = React.useRef<boolean>(false);
+    const [following, setFollowing] = useState<boolean>(true);
 
     // Hotel Laitau
     var coordinates = {
         latitude: 37.78825,
         longitude: -122.4324,
     };
+
+    // Fecth the user's initial location when the component mounts and handle camera movement
+    useEffect(() => {
+        (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") return;
+
+        let loc = await Location.getCurrentPositionAsync({});
+            setLocation(loc.coords);
+        })();
+
+        const locationSubscription = Location.watchPositionAsync(
+            {
+                accuracy: Location.Accuracy.High,
+                timeInterval: 1000,
+                distanceInterval: 5,
+            },
+            async (newLocation) => {
+                setLocation(newLocation.coords);
+                setSpeed(newLocation.coords.speed || null); // Set speed to null if not available
+
+            }
+        );
+    }, []);
 
     // --- Centralized Route Starter Function ---
     const startDrivingRoute = async (
@@ -98,9 +126,7 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
                 for (let i = 0; i < legs.length; i++) {
                     viaText += legs[i].summary + " ";
                 }
-                console.log("via be: ", viaText);
                 setVia(viaText); // Assuming 'via' is an array of waypoints
-                console.log("Route started:", route.summary);
             }
         } catch (error) {
             console.error("Error starting driving route:", error);
@@ -110,7 +136,12 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
 
     async function endTrip(){
         // logic for when the user reaches destination
-        
+        console.log("ending trip...");
+        setEta(null);
+        setDistance(null);
+        setVia("");
+        console.log(routeCoordinates[routeCoordinates.length - 1]);
+        setRouteCoordinates([]);
     }
 
 
@@ -131,9 +162,19 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
     }, [user_id]);
 
     useEffect(() => {
+        if(following && mapRef.current && location){
+            console.log("hellooooo");
+            animateCameraFollowUser();
+        }
+
         if (!location || !destination) {
             setRouteCoordinates([]);
             return;
+        }
+
+        if (!zoomRef.current){
+            animateCameraToDrivingMode();
+            zoomRef.current = true; // prevent re zooming
         }
 
         const hasArrived =
@@ -142,6 +183,9 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
 
         if (hasArrived) {
             endTrip();
+            zoomRef.current = false;
+            animateCameraFollowUser();
+            return 
         } else {
             console.log("Starting route...");
             //startDrivingRoute(location, destination);
@@ -176,47 +220,33 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
         return 0;
     };
 
-    // Fecth the user's current location when the component mounts
-    useEffect(() => {
-        (async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") return;
+    async function animateCameraToDrivingMode(){
+        mapRef.current?.animateCamera({
+        center: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+        },
+        pitch: 45,         // tilt for a driving view
+        heading: location.heading || 0, // direction of movement
+        zoom: 17,          // closer zoom level for driving
+        }, { duration: 1000 });
+    }
 
-        let loc = await Location.getCurrentPositionAsync({});
-            setLocation(loc.coords);
-            /*
-            drivingRoute(
-                { latitude: loc.coords.latitude, longitude: loc.coords.longitude },
-                { latitude: 38.52917176800818, longitude: -8.898812088449557 } // Example destination
-            );*/
-        })();
-
-        const locationSubscription = Location.watchPositionAsync(
-            {
-                accuracy: Location.Accuracy.High,
-                timeInterval: 1000,
-                distanceInterval: 5,
-            },
-            async (newLocation) => {
-                setLocation(newLocation.coords);
-                setSpeed(newLocation.coords.speed || null); // Set speed to null if not available
-                
-                console.log(newLocation);
-                /*if (following) {
-                    drivingRoute(
-                        { latitude: newLocation.coords.latitude, longitude: newLocation.coords.longitude },
-                        destination
-                    );
-                }*/
-            }
-        );
-    }, []);
-
+    async function animateCameraFollowUser(){
+        mapRef.current?.animateCamera({
+        center: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+        },
+        heading: location.heading || 0, // direction of movement
+        zoom: 17,          // closer zoom level for driving
+        }, { duration: 500 });
+    }
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             {location && (
-                <MapView
+                <><MapView
                     style={styles.map}
                     showsUserLocation={true}
                     followsUserLocation={following}
@@ -226,21 +256,36 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
                         latitudeDelta: 0.01,
                         longitudeDelta: 0.01,
                     }}
+                    ref={mapRef}
+                    onPanDrag={() => setFollowing(false)}
                 >
+                    <Marker
+                        coordinate={{
+                            latitude: routeCoordinates && routeCoordinates.length > 0 ? routeCoordinates[routeCoordinates.length - 1].latitude : 0,
+                            longitude: routeCoordinates && routeCoordinates.length > 0 ? routeCoordinates[routeCoordinates.length - 1].longitude : 0,
+                        }}
+                        title="Destination"
+                        style={{ display: routeCoordinates && routeCoordinates.length > 0 ? "flex" : "none" }}
+                        />
 
-                <Marker
-                    coordinate={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
-                    }}
-                    title="You are here"
-                />
-                <Polyline
-                    coordinates={routeCoordinates}
-                    strokeWidth={4}
-                    strokeColor="#1E90FF"
-                    />
+                    <Marker
+                        coordinate={{
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                        }}
+                        title="You are here" />
+
+                    <Polyline
+                        coordinates={routeCoordinates}
+                        strokeWidth={4}
+                        strokeColor="#1E90FF" />
                 </MapView>
+                <TouchableOpacity style= {styles.followButton} onPress={() => setFollowing(true)}>
+                    <Text>Follow</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style= {styles.endTrip} onPress={() => endTrip()}>
+                        <Text> End Trip</Text>
+                </TouchableOpacity></>
             )}
         </View>
     );
@@ -257,4 +302,20 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: 'blue',
     },
+    endTrip: {
+        position:"absolute",
+        bottom: 200,
+        width: 80,
+        height: 50,
+        borderColor: "red",
+        borderWidth: 1
+    },
+    followButton: {
+        position:"absolute",
+        bottom: 250,
+        width: 80,
+        height: 50,
+        borderColor: "red",
+        borderWidth: 1
+    }
 });

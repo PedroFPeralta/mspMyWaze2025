@@ -5,7 +5,6 @@ export const fetchUserPreferences = async (userId) => {
   try {
     const docRef = doc(FIRESTORE_DB, "user_preferences", userId);
     const docSnap = await getDoc(docRef);
-
     console.log("User preferences fetched:", userId);
     return docSnap.data();
   } catch (error) {
