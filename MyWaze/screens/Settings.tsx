@@ -54,6 +54,11 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             title="Vehicle Details?"
             onPress={() => navigation.navigate("CarList")}
           />
+          <SettingsCategory
+            vectorIcon="location-arrow"
+            title="Favorite Locations"
+            onPress={() => navigation.navigate("FavoriteLocationsList")}
+          />
         </View>
       </View>
       <View> {/* Setting Group 3*/}
