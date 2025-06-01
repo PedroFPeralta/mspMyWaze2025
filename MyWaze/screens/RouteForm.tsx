@@ -36,6 +36,9 @@ const RouteForm = () => {
   const auth = FIREBASE_AUTH;
   const user_id = auth.currentUser?.uid;
 
+  //transport type
+  const [selectedTransportMode, setSelectedTransportMode] = useState<'car' | 'public_transport' | null>(null);
+
   const fetchHistory = async () => {
     try {
       const data = await fetchUserHistory(user_id);
@@ -149,6 +152,31 @@ const RouteForm = () => {
         />
       )}
 
+      {/* ------------------------------------------------------------------------- */}
+      {/* transport type */}
+      <View style={styles.transportModeContainer}>
+      <TouchableOpacity style={[
+          styles.transportButton,
+          selectedTransportMode === 'car' && styles.selectedTransportButton,
+        ]} onPress={() => setSelectedTransportMode('car')}>
+        <Text style={[
+          styles.transportButtonText,
+          selectedTransportMode === 'car' && styles.selectedButtonText,
+          ]}> My car </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[
+        styles.transportButton,
+        selectedTransportMode === 'public_transport' && styles.selectedTransportButton,
+        ]} onPress={() => setSelectedTransportMode('public_transport')}>
+        <Text style={[
+          styles.transportButtonText,
+          selectedTransportMode === 'public_transport' && styles.selectedButtonText,
+          ]}> Public Transport </Text>
+      </TouchableOpacity>
+    </View>
+    {/* ------------------------------------------------------------------------- */}
+
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.button} onPress={handleConfirmRoute}>
           <Text style={{ color: "#fff" }}>📍 Confirm</Text>
@@ -223,5 +251,34 @@ const styles = StyleSheet.create({
     backgroundColor: "#eee",
     padding: 12,
     borderRadius: 8,
+  },
+  //transport type
+transportModeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  transportButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'black',
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  selectedTransportButton: {
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
+  },
+  transportButtonText: {
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  selectedButtonText: {
+    color: '#fff',
   },
 });
