@@ -11,6 +11,7 @@ import NavigationPreferencesScreen from "./screens/NavigationPreferences";
 import MainScreen from "./screens/MainScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import CarListScreen from "./screens/CarListScreen";
+import FavoriteLocationsScreen from "./screens/FavoriteLocationsScreen";
 
 // Stack Navigator Screens and their parameters
 export type RootStackParamList = {
@@ -24,9 +25,10 @@ export type RootStackParamList = {
   Settings: undefined;
   NavigationPreferences: undefined;
   MainScreen: {
-    destinationCoords?: [number, number];
+    destinationCoords?: [number, number],
   };
   CarList: undefined;
+  FavoriteLocationsList: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -71,6 +73,11 @@ export default function App() {
             component={CarListScreen}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name = "FavoriteLocationsList"
+            component = {FavoriteLocationsScreen}
+            options = {{headerShown: false}}
+        />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -45,7 +45,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       setIsLoading(true); // Set loading state to true
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log("Login successful:", response);
-      navigation.navigate("Map", {}); // Navigate to the Map screen after successful login
+      navigation.navigate("MainScreen", {}); // Navigate to the Map screen after successful login
     } catch (error) {
       console.error("Login error:", error);
     } finally {
@@ -58,12 +58,12 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     const response = await signInWithEmailAndPassword(auth, "teste@email.com", "123456");
     //const response2 = await createUserPreferences(response.user.uid);
     //navigation.navigate("Map", {}); // Navigate to the Map screen when skip is pressed
-    navigation.navigate("MainScreen"); // Navigate to the MainScreen after skipping
+    navigation.navigate("MainScreen", {}); // Navigate to the MainScreen after skipping
   };
 
   return (
     <View style={styles.container}>
-      <FontAwesome name="user" size={80} color="white" />
+      <FontAwesome name="user" size={85} color="white" />
       <Text style={{fontSize: 24, fontWeight: "bold", color:"whitesmoke", textShadowColor: 'black', textShadowOffset: { width: 1.5, height: 1.5 }, textShadowRadius: 1,}}>Login</Text>
       <View style={styles.loginContainer}>
         <View style={styles.inputContainer}>
@@ -74,39 +74,39 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             onChangeText={(value) => setEmail(value)}
           />
           <TextInput
-                                  style = {styles.textInput}
-                                  placeholder="Password"
-                                  value = {password}
-                                  onChangeText={(value) => setPassword(value)} secureTextEntry={passwordVisible}
+            style = {styles.textInput}
+            placeholder="Password"
+            value = {password}
+            onChangeText={(value) => setPassword(value)} secureTextEntry={passwordVisible}
           />
         </View>
         <TouchableOpacity onPress={togglePasswordVisibility}>
           {passwordVisible ? 
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome name="eye" size={24} color="black" />
-                <Text> Show </Text>
-              </View>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <FontAwesome name="eye" size={24} color="black" />
+              <Text> Show </Text>
+            </View>
           : 
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome name="eye-slash" size={24} color="black" />
-                <Text> Hide </Text>
-              </View>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <FontAwesome name="eye-slash" size={24} color="black" />
+              <Text> Hide </Text>
+            </View>
           }
         </TouchableOpacity>
         {isLoading ? (
             <Text>Loading...</Text>
         ) : (
           <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={[styles.button, styles.buttonBack]} onPress={() => navigation.goBack()}>
-                                                          <Text style={styles.buttonText}>Back</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
-                                                          <Text style={styles.buttonText}>Login</Text>
-                                </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, styles.buttonBack]} onPress={() => navigation.goBack()}>
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
-      <TouchableOpacity>
+      <TouchableOpacity style={{position: "absolute", bottom: 100, }}>
         <Button
           title="skip"
           onPress={() => customSkip()}
@@ -132,23 +132,19 @@ const styles = StyleSheet.create({
   loginContainer: {
     backgroundColor: "whitemoke",
     width: 300,
-    height: 330,
+    height: 310,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: 20,
-    borderWidth: 1,
-    borderColor: "black",
   },
   inputContainer:{
-    borderWidth: 1,
-    borderColor: "purple",
     height: 160,
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
   },
   textInput:{
@@ -158,26 +154,26 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     backgroundColor: "whitesmoke",
     borderRadius: 50,
-    width: "80%",
-    height: 40,
+    width: "85%",
+    height: 45,
   },
   buttonContainer:{
     display: "flex",
     flexDirection: "row",
-    borderColor: "purple",
     alignItems: "center",
     justifyContent: "space-evenly",
-    borderWidth: 1,
     width: "80%",
   },
   button:{
-      backgroundColor: '#5A189A', // deep purple
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 25,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 5,
+    backgroundColor: '#5A189A', // deep purple
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5,
+    borderColor: "black",
+    borderWidth: 2,
   },
   buttonBack: {
     backgroundColor: 'grey',

@@ -44,8 +44,6 @@ const styles = StyleSheet.create({
         left: 20,
         borderRadius: 10,
         zIndex: 1,
-        borderColor: "red",
-        borderWidth: 1,
         height: 95,
     },
     currentSpeedCircle: {
@@ -55,7 +53,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#A3D5FF',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 6,
+        borderWidth: 3,
         borderStyle: "solid",
         borderColor: "black",
         paddingTop: 5,
@@ -64,14 +62,10 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'bold',
         color: "white",
-        borderColor: 'black',
-        borderWidth: 1,
     },
     measurementText: {
         fontSize: 16,
         color: 'white',
-        borderColor: 'black',
-        borderWidth: 1,
     },
     speedLimitCircle: {
         position: "relative",
@@ -84,8 +78,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 5,       
         borderStyle: "solid",
-        //backgroundColor: 'white',
-        //borderColor: 'red',
     },
     speedLimitText: {
         fontSize: 24,

@@ -38,6 +38,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             vectorIcon="gear"
             title="General"
             onPress={() => alert("General Settings")}
+            lastChild= {true}
           />
         </View>
       </View>
@@ -51,13 +52,14 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
           />
           <SettingsCategory
             vectorIcon="car"
-            title="Vehicle Details?"
+            title="Vehicle Details"
             onPress={() => navigation.navigate("CarList")}
           />
           <SettingsCategory
             vectorIcon="location-arrow"
             title="Favorite Locations"
             onPress={() => navigation.navigate("FavoriteLocationsList")}
+            lastChild= {true}
           />
         </View>
       </View>
@@ -73,6 +75,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
             vectorIcon="info-circle"
             title="About"
             onPress={() => null}
+            lastChild= {true}
           />
         </View>
       </View>
@@ -85,12 +88,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#A3D5FF',
-    borderColor: "red",
-    borderWidth: 2,
   },
   settingsCategoryText: {
     backgroundColor: "whitesmoke",
     height: 25,
+    fontSize: 14,
     paddingLeft: 5,
     textAlignVertical: "center",
   }

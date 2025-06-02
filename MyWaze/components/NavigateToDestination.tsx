@@ -42,7 +42,7 @@ export default function NavigateToDestination({ destination, distance, duration,
         <View style={[styles.container, { display: visibility ? 'flex' : 'none' }]}>
             <View style= {styles.routeDetails}>
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text>Drive to {destination}?</Text>
+                    <Text style={{fontSize: 16, fontWeight: "bold"}}>Drive to {destination}?</Text>
                 </View>
                 <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
                     <Text>{duration}</Text>
@@ -50,35 +50,35 @@ export default function NavigateToDestination({ destination, distance, duration,
                 </View>
                 
                 <Text>Via: {via}</Text>
-                <View style = {{display: "flex", flexDirection: "row" , alignItems: "center", alignContent: "center", borderColor:"purple", borderWidth:1, marginTop: 10}}>
+                <View style = {styles.preferenceContainer}>
                     {preferences && preferences.avoid_ferries && (
-                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "space-between", marginTop: 10, borderColor: "red",  borderWidth: 1, marginRight: 10, width: 70}}>
-                            <FonteAwesome name="ship" size={20} color="black" />
-                            <Text>Avoid Ferries</Text>
+                        <View style={styles.preference}>
+                            <FonteAwesome name="ship" size={24} color="white" />
+                            <Text style= {{color: "white"}}>Avoid Ferries</Text>
                         </View>
                     )}
 
                     {preferences && preferences.avoid_tolls && (
-                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "space-between", marginTop: 10, borderColor: "red", borderWidth: 1,  marginRight: 10, width: 70}}>
-                            <FonteAwesome name="car" size={20} color="black" />
-                            <Text>Avoid Tolls</Text>
+                        <View style={styles.preference}>
+                            <FonteAwesome name="car" size={24} color="white" />
+                            <Text style= {{color: "white"}}>Avoid Tolls</Text>
                         </View>
                     )}
 
                     {preferences && preferences.avoid_motorways && (
-                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "space-between", marginTop: 10, borderColor: "red", borderWidth: 1,  marginRight: 10, width: 70}}>
-                            <FonteAwesome name="car" size={20} color="black" />
-                            <Text>Avoid Motorways</Text>
+                        <View style={styles.preference}>
+                            <FonteAwesome name="car" size={24} color="white" />
+                            <Text style= {{color: "white"}}>Avoid Motorways</Text>
                         </View>
                     )}
                 </View>
             </View>
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity onPress= {() => onCancel()}>
-                    <Text style={{ color: 'blue', fontSize: 16 }}>Cancel</Text>
+                <TouchableOpacity style={[styles.button, {backgroundColor: "grey"}]} onPress= {() => onCancel()}>
+                    <Text style={{color: 'white', fontWeight: "bold", fontSize: 16}}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => onConfirm()}>
-                    <Text style={{ color: 'blue', fontSize: 16 }}>Confirm</Text>
+                <TouchableOpacity style={styles.button} onPress={() => onConfirm()}>
+                    <Text style={{color: 'white', fontWeight: "bold", fontSize: 16}}>Confirm</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -103,8 +103,6 @@ const styles = StyleSheet.create({
     },
     routeDetails: {
         marginBottom: 10,
-        borderColor: "red",
-        borderWidth: 1,
         padding: 10,
     },
     routeTop:{
@@ -112,15 +110,50 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         flex: 1,
-        borderColor: "red",
-        borderWidth: 1,
     },
     buttonsContainer: {
-        borderColor: "red",
-        borderWidth: 1,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
+        justifyContent: 'space-around',
+        width: "80%",
+        alignSelf: "center"
     },
-
+    preferenceContainer:{
+        display: "flex", 
+        flexDirection: "row" , 
+        alignItems: "center", 
+        alignContent: "center", 
+        justifyContent: "space-around",
+        marginTop: 10
+    },
+    preference: {
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: "space-between", 
+        backgroundColor: "#5A189A", 
+        width: 95,
+        padding: 5,
+        borderRadius: 10
+    },
+    buttonContainer:{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "80%",
+    },
+    button:{
+        backgroundColor: '#5A189A', // deep purple
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: "black",
+        borderWidth: 2,
+    },
+    buttonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+    }
 });

@@ -44,7 +44,7 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
 
     return(
         <View style={styles.container}>
-          <FontAwesome name="user-plus" size={80} color="white"/>           
+          <FontAwesome name="user-plus" size={85} color="white"/>           
           <Text style={{fontSize: 24, fontWeight: "bold", color:"whitesmoke", textShadowColor: 'black', textShadowOffset: { width: 1.5, height: 1.5 }, textShadowRadius: 1,}}>Register</Text>
             <View style={styles.loginContainer}>
                 <View style = {styles.inputContainer}>
@@ -53,12 +53,6 @@ export default function RegisterScreen({navigation}: RegisterScreenProps) {
                         placeholder="Email"
                         value = {email}
                         onChangeText={(value) => setEmail(value)}
-                    />
-                    <TextInput
-                        style = {styles.textInput}
-                        placeholder="Phone Number"
-                        value = {phoneNumber}
-                        onChangeText={(value) => setPhoneNumber(value)}
                     />
                     <TextInput
                         style = {styles.textInput}
@@ -99,23 +93,19 @@ const styles = StyleSheet.create({
   loginContainer: {
     backgroundColor: "whitemoke",
     width: 300,
-    height: 330,
+    height: 310,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: 20,
-    borderWidth: 1,
-    borderColor: "black",
   },
   inputContainer:{
-    borderWidth: 1,
-    borderColor: "purple",
     height: 160,
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
   },
   textInput:{
@@ -125,25 +115,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     backgroundColor: "whitesmoke",
     borderRadius: 50,
-    width: "80%",
-    height: 40,
+    width: "85%",
+    height: 45,
   },
   buttonContainer:{
     display: "flex",
     flexDirection: "column",
-    borderColor: "purple",
     alignItems: "center",
-    borderWidth: 1,
     width: "80%",
   },
   button:{
-      backgroundColor: '#5A189A', // deep purple
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 25,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 5,
+    backgroundColor: '#5A189A', // deep purple
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5,
+    borderColor: "black",
+    borderWidth: 2,
   },
   buttonText: {
     color: "white",

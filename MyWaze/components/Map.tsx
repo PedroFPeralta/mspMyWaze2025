@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { StyleSheet } from "react-native";
@@ -248,7 +248,7 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
             {location && (
                 <><MapView
                     style={styles.map}
-                    showsUserLocation={true}
+                    showsUserLocation={false}
                     followsUserLocation={following}
                     initialRegion={{
                         latitude: location.latitude,
@@ -266,14 +266,24 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
                         }}
                         title="Destination"
                         style={{ display: routeCoordinates && routeCoordinates.length > 0 ? "flex" : "none" }}
-                        />
+                    />
 
                     <Marker
                         coordinate={{
-                            latitude: location.latitude,
-                            longitude: location.longitude,
+                        latitude: location.latitude,
+                        longitude: location.longitude,
                         }}
-                        title="You are here" />
+                        anchor={{ x: 0.5, y: 0.5 }} // center the icon
+                        rotation={location.heading || 0}
+                        flat={true} // rotate with the map
+                    >
+                        <Image
+                        source={require('../assets/arrow.png')} // your custom arrow image
+                        style={{ width: 40, height: 40 }}
+                        tintColor={"blue"}
+                        resizeMode="contain"
+                        />
+                    </Marker>
 
                     <Polyline
                         coordinates={routeCoordinates}
@@ -281,10 +291,10 @@ export default function Map({ destination, setSpeed, setEta, setDistance, setVia
                         strokeColor="#1E90FF" />
                 </MapView>
                 <TouchableOpacity style= {styles.followButton} onPress={() => setFollowing(true)}>
-                    <Text>Follow</Text>
+                    <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>Follow</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style= {styles.endTrip} onPress={() => endTrip()}>
-                        <Text> End Trip</Text>
+                    <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>End Trip</Text>
                 </TouchableOpacity></>
             )}
         </View>
@@ -304,18 +314,29 @@ const styles = StyleSheet.create({
     },
     endTrip: {
         position:"absolute",
-        bottom: 200,
+        bottom: 180,
+        backgroundColor: "#5A189A",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         width: 80,
-        height: 50,
-        borderColor: "red",
-        borderWidth: 1
+        height: 30,
+        borderRadius: 20,
+        borderColor: "black",
+        borderWidth: 2,
     },
     followButton: {
         position:"absolute",
-        bottom: 250,
+        bottom: 180,
+        right: 10,
+        backgroundColor: "#5A189A",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         width: 80,
-        height: 50,
-        borderColor: "red",
-        borderWidth: 1
+        height: 30,
+        borderRadius: 20,
+        borderColor: "black",
+        borderWidth: 2,
     }
 });

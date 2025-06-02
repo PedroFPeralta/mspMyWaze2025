@@ -28,16 +28,23 @@ type FontAwesomeName = ComponentProps<typeof FontAwesome>["name"];
 interface SettingsCategoryProps {
   vectorIcon: FontAwesomeName;
   title: string;
+  lastChild?: boolean;
   onPress: () => void;
 }
 
-export default function SettingsCategory({ vectorIcon, title, onPress }: SettingsCategoryProps) {
+export default function SettingsCategory({ vectorIcon, title, onPress, lastChild }: SettingsCategoryProps) {
   // Firebase Authentication
   const auth = FIREBASE_AUTH;
 
   return (
-    <TouchableOpacity style={styles.settingsCategory} onPress={onPress}>
-        <FontAwesome name={vectorIcon} size={40} color="black" style={{marginRight: 10}}/>
+    <TouchableOpacity
+      style={[
+        styles.settingsCategory,
+        lastChild ? styles.lastChild : null
+      ]}
+      onPress={onPress}
+    >
+        <FontAwesome name={vectorIcon} size={40} color="#A3D5FF" style={{marginRight: 10}}/>
         <Text>{title}</Text>
     </TouchableOpacity>
   );
@@ -50,9 +57,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     height: 60,
-    borderColor: "purple",
-    borderWidth: 1,
     alignItems: "center",
     padding: 5,
+    borderBottomColor: "grey",
+    borderBottomWidth: 1
   },
+  lastChild: {
+    borderBottomWidth:0,
+  }
 });

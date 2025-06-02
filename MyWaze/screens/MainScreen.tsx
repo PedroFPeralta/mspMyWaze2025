@@ -104,7 +104,7 @@ export default function MapScreen({ navigation, route }: MainScreenProps) {
         <FontAwesome name="bars" size={30} color="white" />
       </TouchableOpacity>
       <Map
-        destination={destination} // Example destination
+        destination={destination} 
         setSpeed={(speed: number | null) => {
           setCurrentSpeed(speed);
           console.log("Current Speed:", speed);
@@ -131,8 +131,8 @@ export default function MapScreen({ navigation, route }: MainScreenProps) {
       <View style={styles.speed}>
         <CurrentSpeed
           speed={currentSpeed}
-          speedLimit={speedLimit} // Example speed limit, replace with actual speed limit from location updates
-          speedLimitExceeded={speedLimitExceeded} // Example speed limit exceeded status, replace with actual status from location updates
+          speedLimit={speedLimit} 
+          speedLimitExceeded={speedLimitExceeded} 
         />
       </View>
       <View style={[styles.eta, { top: insets.top + 10 }]}>
@@ -140,17 +140,20 @@ export default function MapScreen({ navigation, route }: MainScreenProps) {
         <Text style={styles.etaText}>{etaText}</Text>
       </View>
       <View style={styles.bottomBar}>
-        <Button
-          title="Search Destination"
-          onPress={() => navigation.navigate("Route")}
-        />
-        <ScrollView horizontal={true} style={styles.savedLocations}>
+      <TouchableOpacity
+        style={styles.searchBar}
+        onPress={() => navigation.navigate("Route")}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.searchText}>Search Destination</Text>
+      </TouchableOpacity>
+        <ScrollView horizontal={true}   contentContainerStyle={{justifyContent: 'center',alignItems: 'center',flexGrow: 1}} style={styles.savedLocations}>
           <TouchableOpacity onPress={() => handleDriveToLocation()}>
-            <View style={styles.savedLocation}>
+            <View style={[styles.savedLocation, {marginLeft: 10}]}>
               <FontAwesome
                 style={styles.savedLocationIcon}
                 name="home"
-                size={24}
+                size={26}
                 color="black"
               />
               <Text style={styles.savedLocationText}>Home</Text>
@@ -162,7 +165,7 @@ export default function MapScreen({ navigation, route }: MainScreenProps) {
               <FontAwesome
                 style={styles.savedLocationIcon}
                 name="briefcase"
-                size={24}
+                size={26}
                 color="black"
               />
               <Text style={styles.savedLocationText}>Work</Text>
@@ -178,19 +181,19 @@ export default function MapScreen({ navigation, route }: MainScreenProps) {
               <FontAwesome
                 style={styles.savedLocationIcon}
                 name="save"
-                size={24}
+                size={26}
                 color="black"
               />
               <Text style={styles.savedLocationText}>NOVA FCT</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => handleSavedLocations()}>
+          <TouchableOpacity onPress={() => navigation.navigate("FavoriteLocationsList")}>
             <View style={styles.savedLocation}>
               <FontAwesome
                 style={styles.savedLocationIcon}
                 name="bookmark-o"
-                size={24}
+                size={26}
                 color="black"
               />
               <Text style={styles.savedLocationText}>More</Text>
@@ -228,8 +231,6 @@ async function requestLocationPermission() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderColor: "red",
-    borderWidth: 1,
   },
   map: {
     flex: 1,
@@ -251,20 +252,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 18, // Makes it circular
     zIndex: 1, // Ensures the button is above the map
+    borderColor: "black",
+    borderWidth: 2
   },
   bottomBar: {
     position: "absolute",
-    padding: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
     bottom: 0,
     width: "100%",
-    height: 150,
-    backgroundColor: "grey",
-    borderColor: "#white",
-    borderWidth: 1,
+    height: 160,
+    backgroundColor: "#A3D5FF",
+    borderTopWidth: 2,
+    borderTopColor: "black",
     zIndex: 0,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+  },
+  searchBar: {
+    alignSelf: 'center',
+    width: '90%',
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  searchText: {
+    color: '#555',
+    fontSize: 16,
   },
   currentSpeedLimit: {
     width: 10,
@@ -273,7 +295,7 @@ const styles = StyleSheet.create({
   },
   speed: {
     position: "absolute",
-    bottom: 300,
+    bottom: 310,
     left: -10,
   },
   eta: {
@@ -288,6 +310,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#A3D5FF",
     borderRadius: 18,
     zIndex: 1,
+    borderWidth: 2,
+    borderColor: "black"
   },
   etaText: {
     color: "white",
@@ -297,12 +321,12 @@ const styles = StyleSheet.create({
   savedLocations: {
     width: "100%",
     height: 100,
-    borderColor: "white",
-    borderWidth: 1,
     marginTop: 10,
+    display: "flex",
+    alignContent: "center",
   },
   savedLocation: {
-    height: 50,
+    height: "75%",
     backgroundColor: "white",
     borderRadius: 15,
     padding: 10,
@@ -313,16 +337,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   savedLocationIcon: {
-    borderColor: "black",
-    borderWidth: 1,
     marginRight: 10,
   },
   savedLocationText: {
     fontSize: 16,
-    borderColor: "black",
     textAlign: "center",
     fontWeight: "bold",
-    borderWidth: 1,
     color: "black",
   },
   navigateToDestinationModal: {
